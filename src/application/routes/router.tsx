@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom'
 import { Home, NotFound } from '~/application/pages'
 import Loading from '../components/shared/Loading'
 import ErrorBoundary from './errorBoundary'
+import Profile from '../pages/UserProfile'
 
 const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const location = useLocation()
@@ -19,6 +20,7 @@ const Router: React.FC = () => {
         <Suspense fallback={<Loading />}>
           <Routes>
             <Route path='/' element={<Home />} />
+            <Route path='/userprofile' element={<Profile />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>
