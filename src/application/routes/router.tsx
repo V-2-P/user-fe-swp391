@@ -3,6 +3,8 @@ import { Route, Routes, useLocation } from 'react-router-dom'
 import { Home, NotFound } from '~/application/pages'
 import Loading from '../components/shared/Loading'
 import ErrorBoundary from './errorBoundary'
+import ProductDetail from '../pages/ProductDetail'
+import Information from '../pages/ProductDetail/information'
 import Profile from '../pages/UserProfile'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
@@ -22,6 +24,8 @@ const Router: React.FC = () => {
         <Suspense fallback={<Loading />}>
           <Routes>
             <Route path='/' element={<Home />} />
+            <Route path='/productDetail' element={<ProductDetail />} />
+            <Route path='/test' element={<Information />} />
             <Route path='/userprofile' element={<Profile />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
