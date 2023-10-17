@@ -5,6 +5,9 @@ import Loading from '../components/shared/Loading'
 import ErrorBoundary from './errorBoundary'
 import ProductDetail from '../pages/ProductDetail'
 import Information from '../pages/ProductDetail/information'
+import Profile from '../pages/UserProfile'
+import Login from '../pages/Login'
+import Register from '../pages/Register'
 
 const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const location = useLocation()
@@ -23,6 +26,9 @@ const Router: React.FC = () => {
             <Route path='/' element={<Home />} />
             <Route path='/productDetail' element={<ProductDetail />} />
             <Route path='/test' element={<Information />} />
+            <Route path='/userprofile' element={<Profile />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<Register />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>
