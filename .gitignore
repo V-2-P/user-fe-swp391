@@ -70,3 +70,5 @@ test-report.xml
 *.code-workspace
 
 .DS_Store
+yarn.lock
+package-lock.json
