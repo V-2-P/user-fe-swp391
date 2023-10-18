@@ -10,6 +10,8 @@ import Login from '../pages/Login'
 import Register from '../pages/Register'
 import { ShoppingCart } from '../pages/ShoppingCart'
 
+import ProductList from '../pages/ProductList'
+
 const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const location = useLocation()
   useLayoutEffect(() => {
@@ -31,6 +33,8 @@ const Router: React.FC = () => {
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
             <Route path='/shoppingcart' element={<ShoppingCart />} />
+
+            <Route path='/productlist' element={<ProductList />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>
