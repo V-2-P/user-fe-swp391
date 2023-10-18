@@ -8,6 +8,7 @@ import Information from '../pages/ProductDetail/information'
 import Profile from '../pages/UserProfile'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
+import ProductList from '../pages/ProductList'
 
 const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const location = useLocation()
@@ -29,6 +30,7 @@ const Router: React.FC = () => {
             <Route path='/userprofile' element={<Profile />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
+            <Route path='/productlist' element={<ProductList />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>
