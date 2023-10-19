@@ -6,7 +6,8 @@ const axiosClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
     'content-type': 'application/json'
-  }
+  },
+  withCredentials: true
 })
 
 /* Request Interceptor */
@@ -14,6 +15,7 @@ export const requestInterceptor = async (config: any) => {
   const storage = new LocalStorageUtils()
   const customHeader = {} as AxiosRequestHeaders
   const accessToken = storage.getItem<string>(LOCAL_STORAGE_KEY.JWT)
+
   if (accessToken) {
     customHeader.Authorization = `Bearer ${accessToken}`
   }
@@ -39,35 +41,19 @@ export const responseErrorInterceptor = async (error: any) => {
   /**
    * Add logic for any error from backend
    */
-  // // Kiểm tra nếu mã trạng thái là 401 (Unauthorized)
-  // if (error.response && error.response.status === 401) {
-  //   const refreshToken = localStorage.getItem('refreshToken')
-  //   if (refreshToken) {
-  //     try {
-  //       // Gọi API để làm mới mã thông báo
-  //       const response = await axiosClient.post('/refresh-token', {
-  //         refreshToken
-  //       })
-  //       const { accessToken, newRefreshToken } = response.data
+  const originalRequest = error.config
+  if (error.response.data.code === 401 && !originalRequest._retry) {
+    originalRequest._retry = true
 
-  //       // Cập nhật mã thông báo mới trong localStorage
-  //       localStorage.setItem('accessToken', accessToken)
-  //       localStorage.setItem('refreshToken', newRefreshToken)
+    const response = await axiosClient.post('/auth/refresh')
 
-  //       // Thử gửi lại request ban đầu với mã thông báo mới
-  //       error.config.headers.Authorization = `Bearer ${accessToken}`
-  //       return axiosClient.request(error.config)
-  //     } catch (refreshError) {
-  //       // Xử lý lỗi khi làm mới mã thông báo
-  //       // Ví dụ: Đăng xuất người dùng, đưa người dùng đến trang đăng nhập, vv.
-  //       console.error('Failed to refresh token:', refreshError)
-  //     }
-  //   } else {
-  //     // Xử lý khi không tìm thấy mã thông báo làm mới
-  //     // Ví dụ: Đăng xuất người dùng, đưa người dùng đến trang đăng nhập, vv.
-  //     console.error('Refresh token not found')
-  //   }
-  // }
+    const { accessToken } = response.data
+    const storage = new LocalStorageUtils()
+    storage.setItem(LOCAL_STORAGE_KEY.JWT, accessToken)
+    originalRequest.headers.Authorization = `Bearer ${accessToken}`
+
+    return axiosClient(originalRequest)
+  }
 
   if (error.response && error.response.data.message) {
     return Promise.reject(error.response.data.message)
