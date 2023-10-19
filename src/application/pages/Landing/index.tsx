@@ -39,7 +39,7 @@ const LandingPage: React.FC = () => {
       </section>
       <section style={{ minHeight: 'calc(100vh - 64px)', width: '100%' }} className='text-center px-20 py-10'>
         <Space direction='vertical' size='middle' className='h-full'>
-          <Button className='!bg-[#213F36] py-[24px]' shape='round'>
+          <Button className='!bg-[#213F36] py-[24px]' size='large' shape='round'>
             Trải nghiệm dịch vụ
           </Button>
           <p>Hãy sở hữu cho mình một con chim to đẹp nào</p>

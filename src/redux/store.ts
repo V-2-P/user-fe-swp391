@@ -8,7 +8,7 @@ import storage from 'redux-persist/lib/storage'
 import { PersistConfig, persistReducer, persistStore } from 'redux-persist'
 import thunk from 'redux-thunk'
 
-import { AppReducer } from './slices'
+import { AppReducer, AccountReducer } from './slices'
 
 const debounceNotify = debounce((notify: any) => notify())
 
@@ -19,7 +19,8 @@ const persistConfig: PersistConfig<any> = {
 }
 
 const reducers = combineReducers({
-  app: AppReducer
+  app: AppReducer,
+  account: AccountReducer
 })
 
 const rootReducer = persistReducer(persistConfig, reducers)

@@ -1,6 +1,7 @@
 import React from 'react'
 import LoginPage from './login'
 import { Button } from 'antd'
+import { Link } from 'react-router-dom'
 
 type HomeProps = object
 
@@ -55,9 +56,11 @@ const Login: React.FC<HomeProps> = () => {
           </div>
           <div className='border border-b-2 border-white w-[80%] mx-auto'></div>
           <h1 className='font-semibold text-lg lg:text-xl'> Chưa có tài khoản? </h1>
-          <Button href='/register' type='primary' htmlType='submit' className='w-[78%] !bg-blue-800'>
-            Đăng ký ngay
-          </Button>
+          <Link to='/register'>
+            <Button type='primary' htmlType='submit' className='w-[78%] !bg-blue-800'>
+              Đăng ký ngay
+            </Button>
+          </Link>
         </div>
       </div>
       <div className='lg:w-[10%]'></div>

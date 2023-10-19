@@ -24,7 +24,7 @@ const items: MenuItem[] = [
     <Text strong className='strong-shadow !text-[#000]'>
       Shop
     </Text>,
-    '/shop'
+    '/productlist'
   ),
   getItem(
     <Button className='!bg-[#213F36]'>
@@ -32,7 +32,7 @@ const items: MenuItem[] = [
         Giỏ hàng / Thanh toán
       </Text>
     </Button>,
-    '/cart'
+    '/shoppingcart'
   )
 ]
 
