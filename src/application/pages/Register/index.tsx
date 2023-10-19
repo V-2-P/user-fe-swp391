@@ -5,7 +5,10 @@ type HomeProps = object
 
 const Register: React.FC<HomeProps> = () => {
   return (
-    <div className="min-h-screen md:min-h-[80vh] lg:min-h-0 flex lg:justify-center lg:p-8 lg:py-[4%] bg-[url('src/application/assets/images/background.jpg')] bg-[30%] bg-cover bg-no-repeat lg:bg-center">
+    <div
+      id='register'
+      className="min-h-screen md:min-h-[80vh] lg:min-h-screen flex lg:justify-center lg:p-8 lg:py-[4%] bg-[url('src/application/assets/images/background.jpg')] bg-[30%] bg-cover bg-no-repeat lg:bg-center"
+    >
       <div className='lg:w-[60%]'></div>
       <div className='lg:w-[30%] w-full bg-white bg-opacity-80 p-6 my-9 lg:my-auto h-fit lg:rounded-xl lg:py-5'>
         <h1 className='text-center text-3xl mb-5 font-bold'>Đăng ký</h1>
