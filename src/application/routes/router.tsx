@@ -30,7 +30,7 @@ const Router: React.FC = () => {
           <Routes>
             <Route element={<CommonLayout />}>
               <Route path='/' element={<Landing />} />
-              <Route path='/productDetail' element={<ProductDetail />} />
+              <Route path='/productdetail/:id' element={<ProductDetail />} />
               <Route path='/test' element={<Information />} />
               <Route path='/userprofile' element={<Profile />} />
               <Route path='/login' element={<Login />} />
