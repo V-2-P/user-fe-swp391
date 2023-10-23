@@ -47,7 +47,10 @@ const List: React.FC = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className='w-[80%] mx-auto lg:w-full lg:text-2xl bg-opacity-80 lg:rounded-lg space-y-5'>
+        <div
+          style={{ background: '#bdd4cd' }}
+          className='w-full p-10 mx-auto lg:w-full lg:text-2xl bg-opacity-80 space-y-5'
+        >
           <div style={{ background: '#038777' }} className='lg:mb-0 p-5 rounded-xl'>
             <Carousel responsive={responsive}>
               {birdData.map((list: any) => (
@@ -185,9 +188,13 @@ const List: React.FC = () => {
               ))}
             </Carousel>
           </div>
+          <div className='w-full mt-10 flex justify-center'>
+            <Button className='!bg-green-800 !text-white' href='/viewall'>
+              View all page
+            </Button>
+          </div>
         </div>
       )}
-      <Button href='/viewall'>View all page</Button>
     </div>
   )
 }
