@@ -15,7 +15,7 @@ interface dataType {
 const { Paragraph, Text } = Typography
 
 export const ViewAllBird: React.FC = () => {
-  const [loading, error, response] = useFetchData(`/bird/all`)
+  const [loading, error, response] = useFetchData(`/birds/all`)
   const birdData: dataType[] = response?.data
 
   console.log(response)

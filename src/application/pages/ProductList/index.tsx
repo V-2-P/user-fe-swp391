@@ -1,10 +1,12 @@
 import React from 'react'
 import './styles.css'
-import { FloatButton } from 'antd'
+import { FloatButton, Layout } from 'antd'
 import List from './listBird'
 import Category from './category'
 import { MessageOutlined, PhoneOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
+import { Content } from 'antd/es/layout/layout'
+import Sider from 'antd/es/layout/Sider'
 type HomeProps = object
 
 const ProductList: React.FC<HomeProps> = () => {
@@ -14,8 +16,14 @@ const ProductList: React.FC<HomeProps> = () => {
     navigate('/')
   }
 
+  // const [toggle, setToggle] = useState(false);
+
+  // const toggleSidebar = () => {
+  //   setToggle(!toggle);
+  // }
+
   return (
-    <div className='relative p-5 min-h-screen' style={{ background: '#bdd4cd' }}>
+    <Layout hasSider style={{ background: '#bdd4cd' }}>
       <FloatButton
         type='primary'
         style={{ right: 24, bottom: 100 }}
@@ -24,22 +32,24 @@ const ProductList: React.FC<HomeProps> = () => {
         icon={<MessageOutlined />}
       />
       <FloatButton type='primary' style={{ right: 24 }} shape='circle' onClick={click} icon={<PhoneOutlined />} />
-      <div className='lg:h-fit lg:flex mx-[1%] lg:mx-[1%] my-[2%]'>
-        <div className='w-[5%]'></div>
-        {/*Filter */}
-        <div className='w-full lg:fixed  lg:w-[20%] flex flex-col'>
-          <div className=''>
-            <Category />
+      {/*Filter */}
+      {/* <Button
+          type='primary'
+          onClick={toggleSidebar}
+          className='lg:w-none'
+        /> */}
+      <Sider width={250} className='overflow-auto !max-h-fit !fixed left-0 top-[62px] bottom-0'>
+        <Category />
+      </Sider>
+      <Layout className='lg:ml-[250px]'>
+        <Content>
+          {/*List */}
+          <div className='w-full'>
+            <List />
           </div>
-        </div>
-        <div className='w-[1%]'></div>
-
-        {/*List */}
-        <div className='lg:w-[70%] lg:ml-[18%]'>
-          <List />
-        </div>
-      </div>
-    </div>
+        </Content>
+      </Layout>
+    </Layout>
   )
 }
 

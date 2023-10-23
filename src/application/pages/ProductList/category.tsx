@@ -4,8 +4,8 @@ import Search from 'antd/es/input/Search'
 
 const Category: React.FC = () => {
   return (
-    <div className='mb-5'>
-      <div className='flex flex-col h-fit bg-gray-300 rounded-xl mr-3 space-y-5'>
+    <div>
+      <div className='flex flex-col bg-gray-300 space-y-5'>
         <div className='mt-5 mx-5'>
           <Search
             placeholder='Nhập tên'
