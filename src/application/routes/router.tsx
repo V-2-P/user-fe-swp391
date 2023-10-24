@@ -13,6 +13,7 @@ import { ShoppingCart } from '../pages/ShoppingCart'
 import ProductList from '../pages/ProductList'
 import CommonLayout from '../layouts/common'
 import { ViewAllBird } from '../pages/ProductList/allBird'
+import Checkout from '../pages/Checkout'
 
 const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const location = useLocation()
@@ -38,6 +39,7 @@ const Router: React.FC = () => {
               <Route path='/shoppingcart' element={<ShoppingCart />} />
               <Route path='/viewall' element={<ViewAllBird />} />
               <Route path='/productlist' element={<ProductList />} />
+              <Route path='/checkout' element={<Checkout />} />
             </Route>
 
             <Route path='*' element={<NotFound />} />
