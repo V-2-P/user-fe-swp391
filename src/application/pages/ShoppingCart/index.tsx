@@ -46,6 +46,9 @@ export const ShoppingCart = () => {
     }
   ])
 
+  const savedCart = JSON.parse(localStorage.getItem('cart') || '[]')
+  console.log(savedCart)
+
   const handleIncrease = (itemId: number) => {
     setCart((prevCart) =>
       prevCart.map((item) => (item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item))

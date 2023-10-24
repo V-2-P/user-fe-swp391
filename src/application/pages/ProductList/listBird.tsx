@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Rate, Button, Image, Skeleton, Badge } from 'antd'
+import { Rate, Button, Image, Skeleton, Badge, App } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import Carousel from 'react-multi-carousel'
 import 'react-multi-carousel/lib/styles.css'
@@ -29,6 +29,7 @@ type Bird = {
 }
 
 const List: React.FC = () => {
+  const { notification } = App.useApp()
   const [recommendLoading, recommendError, recommendResponse] = useFetchData(`/birds/recommendation`)
 
   const [displayTop20, setDisplayTop20] = useState<Bird[]>([])
@@ -40,6 +41,18 @@ const List: React.FC = () => {
 
   const click = (id: any) => {
     navigate(`/productdetail/${id}`)
+  }
+
+  const addToCart = (id: number) => {
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]')
+    const existingCartItem = cart.find((item: any) => item.id === id)
+    if (existingCartItem) {
+      cart = cart.map((item: any) => (item.id === id ? { ...item, quantity: item.quantity + 1 } : item))
+    } else {
+      cart = [...cart, { id, quantity: 1 }]
+    }
+    localStorage.setItem('cart', JSON.stringify(cart))
+    notification.success({ message: 'Thêm vào giỏ hàng thành công' })
   }
 
   useEffect(() => {
@@ -96,6 +109,7 @@ const List: React.FC = () => {
                             So sánh
                           </Button>
                           <Button
+                            onClick={() => addToCart(list.id)}
                             size='middle'
                             icon={<ShoppingCartOutlined />}
                             className='!w-[100%] lg:mt-0 lg:w-[50%] text-center !p-0 m-0 lg:mr-1 lg:ml-2 !text-xs !bg-green-700 !text-white'
