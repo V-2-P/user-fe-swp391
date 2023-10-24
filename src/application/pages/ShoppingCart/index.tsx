@@ -182,7 +182,9 @@ export const ShoppingCart = () => {
                   Tổng thanh toán ({countSelected()}): <p className='text-red-500'>{calculateTotalPrice()} VNĐ</p>
                 </div>
                 <div className='w-[15%]'>
-                  <Button className='!bg-green-800 !text-white'>Mua hàng</Button>
+                  <Button href='/checkout' className='!bg-green-800 !text-white'>
+                    Mua hàng
+                  </Button>
                 </div>
               </List.Item>
             </List>
