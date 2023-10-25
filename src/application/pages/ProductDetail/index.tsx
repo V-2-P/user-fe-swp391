@@ -29,21 +29,22 @@ type BirdImage = {
 }
 
 type BirdData = {
-  birdType: string
-  bird_images: BirdImage[] // Thay any[] bằng kiểu dữ liệu phù hợp với mảng hình ảnh chim
-  categoryName: string
-  competitionAchievements: number
-  countRating: number
-  description: string
-  gender: string
   id: number
   name: string
+  categoryName: string
+  birdType: string
+  gender: string
+  color: string
   price: number
-  purebredLevel: string
   quantity: number
-  sold: number
   thumbnail: string
+  competitionAchievements: number
+  purebredLevel: string
+  description: string
   totalRating: number
+  countRating: number
+  sold: number
+  bird_images: BirdImage[]
 }
 
 type BirdFeedback = {
@@ -114,7 +115,7 @@ const ProductDetail: React.FC<HomeProps> = () => {
     {
       key: '3',
       label: 'Màu sắc',
-      children: 'Hangzhou, Zhejiang'
+      children: `${birdData?.color}`
     },
     {
       key: '4',
