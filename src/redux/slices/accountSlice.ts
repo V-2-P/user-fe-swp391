@@ -34,7 +34,9 @@ export const accountSlice = createSlice({
       state.isLogin = false
       state.error = null
       state.isLoading = false
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]')
       localStorage.clear()
+      localStorage.setItem('cart', JSON.stringify(cart))
     }
   },
   extraReducers: (builder) => {
