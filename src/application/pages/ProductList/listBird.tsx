@@ -158,6 +158,7 @@ const List: React.FC = () => {
                           </Button>
                           <Button
                             size='middle'
+                            onClick={() => addToCart(list.id)}
                             icon={<ShoppingCartOutlined />}
                             className='!w-[100%] lg:mt-0 lg:w-[50%] text-center !p-0 m-0 lg:mr-1 lg:ml-2 !text-xs !bg-green-700 !text-white'
                           >
