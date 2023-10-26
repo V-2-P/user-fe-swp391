@@ -12,7 +12,7 @@ const initialState: AppState = {
   timeZone: '',
   reFetch: false,
   theme: {
-    colorPrimary: '#e28048',
+    colorPrimary: '#157e3c',
     colorPrimaryBg: '#e6f7ff'
   }
 }

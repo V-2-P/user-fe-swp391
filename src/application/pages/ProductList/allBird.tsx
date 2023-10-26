@@ -3,6 +3,7 @@ import { PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import useFetchData from '~/application/hooks/useFetchData'
 import { CloseCircleOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
+import { FloatButton } from 'antd'
 
 interface dataType {
   id: number
@@ -117,6 +118,7 @@ export const ViewAllBird: React.FC = () => {
                     </div>
                   </Col>
                 ))}
+              <FloatButton.BackTop />
             </Row>
           )}
         </Skeleton>

@@ -5,6 +5,7 @@ import Carousel from 'react-multi-carousel'
 import 'react-multi-carousel/lib/styles.css'
 import { PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import useFetchData from '~/application/hooks/useFetchData'
+import { formatCurrencyVND } from '~/utils/numberUtils'
 
 const responsive = {
   desktop: {
@@ -37,8 +38,20 @@ const List: React.FC = () => {
   const [list10, setList10] = useState<Bird[]>([])
   const navigate = useNavigate()
 
-  console.log(recommendResponse)
-
+  const addToCompare = (bird: any) => {
+    let compare = JSON.parse(localStorage.getItem('compare') || '[]') as any
+    if (compare.length === 3) {
+      notification.warning({ message: 'Danh sách so sánh đã đủ' })
+      return
+    }
+    const existingCartItem = compare.find((item: any) => item.id === bird.id)
+    if (existingCartItem) {
+      compare = compare.map((item: any) => (item.id === bird.id ? { ...item } : item))
+    } else {
+      compare = [...compare, bird]
+    }
+    localStorage.setItem('compare', JSON.stringify(compare))
+  }
   const click = (id: any) => {
     navigate(`/productdetail/${id}`)
   }
@@ -97,11 +110,14 @@ const List: React.FC = () => {
                         <div className='flex !my-auto w-full'>
                           <Rate allowHalf className='!text-sm lg:!text-xs w-full' />
                           <div className='flex my-auto justify-center w-[30%]'>
-                            <p className='break-words w-[full] justify-end text-sm text-red-500'>${list.price}</p>
+                            <p className='break-words w-[full] justify-end text-sm text-red-500'>
+                              {formatCurrencyVND(list.price) ? formatCurrencyVND(list.price) : 0}
+                            </p>
                           </div>
                         </div>
                         <div className='flex w-full '>
                           <Button
+                            onClick={() => addToCompare(list)}
                             size='middle'
                             icon={<PlusOutlined />}
                             className='!w-[100%] !border-green-700 lg:w-[50%] text-center !p-0 !text-xs !text-green-700'
@@ -145,11 +161,14 @@ const List: React.FC = () => {
                         <div className='flex !my-auto w-full'>
                           <Rate allowHalf className='!text-sm lg:!text-xs w-full' />
                           <div className='flex my-auto justify-center w-[30%]'>
-                            <p className='break-words w-[full] justify-end text-sm text-red-500'>${list.price}</p>
+                            <p className='break-words w-[full] justify-end text-sm text-red-500'>
+                              {formatCurrencyVND(list.price) ? formatCurrencyVND(list.price) : 0}
+                            </p>
                           </div>
                         </div>
                         <div className='flex w-full '>
                           <Button
+                            onClick={() => addToCompare(list)}
                             size='middle'
                             icon={<PlusOutlined />}
                             className='!w-[100%] !border-green-700 lg:w-[50%] text-center !p-0 !text-xs !text-green-700'
