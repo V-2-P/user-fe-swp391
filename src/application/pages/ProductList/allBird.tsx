@@ -1,4 +1,4 @@
-import { Button, Col, Image, Rate, Result, Row, Skeleton, Typography } from 'antd'
+import { Button, Col, Image, Result, Row, Skeleton, Typography } from 'antd'
 import { PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import useFetchData from '~/application/hooks/useFetchData'
 import { CloseCircleOutlined } from '@ant-design/icons'
@@ -87,14 +87,11 @@ export const ViewAllBird: React.FC = () => {
                         />
                       </button>
                       <div className='w-[100%] flex flex-col p-2 lg:p-3 space-y-3'>
-                        <p className='break-words w-[full] justify-start text-sm'>{list.name}</p>
                         <div className=' w-full mb-[2%] '>
                           <div className='flex flex-col text-xs space-y-3'>
-                            <div className='flex !my-auto w-full'>
-                              <Rate allowHalf className='!text-sm lg:!text-xs w-full' />
-                              <div className='flex my-auto justify-center w-[30%]'>
-                                <p className='break-words w-[full] justify-end text-sm text-red-500'>${list.price}</p>
-                              </div>
+                            <div className='flex flex-col justify-center w-full space-y-3'>
+                              <p className='break-words w-full text-left text-sm'>{list.name}</p>
+                              <p className='break-words w-full text-sm text-red-500'>${list.price}</p>
                             </div>
                             <div className='flex w-full '>
                               <Button
