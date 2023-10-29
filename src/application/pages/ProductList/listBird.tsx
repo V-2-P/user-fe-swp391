@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Rate, Button, Image, Skeleton, Badge, App } from 'antd'
+import { Button, Image, Skeleton, Badge, App } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import Carousel from 'react-multi-carousel'
 import 'react-multi-carousel/lib/styles.css'
@@ -104,16 +104,13 @@ const List: React.FC = () => {
                   </button>
 
                   <div className='w-[100%] flex flex-col p-2 lg:p-3 space-y-3'>
-                    <p className='break-words w-[full] justify-start text-sm'>{list.name}</p>
                     <div className=' w-full mb-[2%] '>
                       <div className='flex flex-col text-xs space-y-3'>
-                        <div className='flex !my-auto w-full'>
-                          <Rate allowHalf className='!text-sm lg:!text-xs w-full' />
-                          <div className='flex my-auto justify-center w-[30%]'>
-                            <p className='break-words w-[full] justify-end text-sm text-red-500'>
-                              {formatCurrencyVND(list.price) ? formatCurrencyVND(list.price) : 0}
-                            </p>
-                          </div>
+                        <div className='flex flex-col space-y-3 my-auto justify-center w-full'>
+                          <p className='break-words w-[full] justify-start text-sm'>{list.name}</p>
+                          <p className='break-words w-[full] justify-end text-sm text-red-500'>
+                            {formatCurrencyVND(list.price) ? formatCurrencyVND(list.price) : 0}
+                          </p>
                         </div>
                         <div className='flex w-full '>
                           <Button
@@ -155,16 +152,13 @@ const List: React.FC = () => {
                     />
                   </button>
                   <div className='w-[100%] flex flex-col p-2 lg:p-3 space-y-3'>
-                    <p className='break-words w-[full] justify-start text-sm'>{list.name}</p>
                     <div className=' w-full mb-[2%] '>
                       <div className='flex flex-col text-xs space-y-3'>
-                        <div className='flex !my-auto w-full'>
-                          <Rate allowHalf className='!text-sm lg:!text-xs w-full' />
-                          <div className='flex my-auto justify-center w-[30%]'>
-                            <p className='break-words w-[full] justify-end text-sm text-red-500'>
-                              {formatCurrencyVND(list.price) ? formatCurrencyVND(list.price) : 0}
-                            </p>
-                          </div>
+                        <div className='flex flex-col !my-auto w-full space-y-3'>
+                          <p className='break-words w-[full] justify-start text-sm'>{list.name}</p>
+                          <p className='break-words w-[full] justify-end text-sm text-red-500'>
+                            {formatCurrencyVND(list.price) ? formatCurrencyVND(list.price) : 0}
+                          </p>
                         </div>
                         <div className='flex w-full '>
                           <Button

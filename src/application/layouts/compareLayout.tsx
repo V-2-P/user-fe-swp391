@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { FloatButton, Modal, Drawer, Row, Col, Button, Space, Select, List, Avatar, Image, App } from 'antd'
 import { PlusOutlined, CloseOutlined } from '@ant-design/icons'
 import { useCallback, useEffect, useState } from 'react'
@@ -64,6 +64,15 @@ const CompareLayout = () => {
   const [dbValue, setDbValue] = useState<any[]>([])
   const [compareList, setCompareList] = useState(JSON.parse(localStorage.getItem('compare') || '[]'))
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const navigate = useNavigate()
+
+  const changeToCompare = (page: any) => {
+    if (compareList.length > 1) {
+      navigate(page)
+    } else {
+      notification.warning({ message: 'Cần thêm chim để so sánh' })
+    }
+  }
 
   const addToCompare = (bird: any) => {
     let compare = JSON.parse(localStorage.getItem('compare') || '[]') as any
@@ -93,7 +102,7 @@ const CompareLayout = () => {
   }
   const handleDelete = (itemId: number) => {
     const compare = JSON.parse(localStorage.getItem('compare') || '[]') as any
-    const filterCompare = compare.filter((item: any) => item.id !== itemId)
+    const filterCompare = compare.filter((item: any) => item.id !== itemId) as any
     localStorage.setItem('compare', JSON.stringify(filterCompare))
     setCompareList(JSON.parse(localStorage.getItem('compare') || '[]'))
   }
@@ -242,7 +251,9 @@ const CompareLayout = () => {
           <Col span={6}>
             <div className='flex justify-center items-center h-full'>
               <Space direction='vertical' size={'middle'}>
-                <Button type='primary'>So sánh ngay</Button>
+                <Button onClick={() => changeToCompare('/compare')} type='primary'>
+                  So sánh ngay
+                </Button>
                 <div className='flex justify-center items-center w-full'>
                   <Button onClick={handleDeleteAll} type='link'>
                     Xóa tất cả
