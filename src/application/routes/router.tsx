@@ -17,6 +17,7 @@ import Checkout from '../pages/Checkout'
 import { VerifyPage } from '../pages/Verify'
 import { ComparePage } from '../pages/Compare'
 import CompareLayout from '../layouts/compareLayout'
+import { Order } from '../pages/Order'
 
 const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const location = useLocation()
@@ -47,6 +48,7 @@ const Router: React.FC = () => {
               <Route path='/register' element={<Register />} />
               <Route path='/checkout' element={<Checkout />} />
               <Route path='/verify' element={<VerifyPage />} />
+              <Route path='/order' element={<Order />} />
             </Route>
 
             <Route path='*' element={<NotFound />} />

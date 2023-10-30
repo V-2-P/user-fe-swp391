@@ -9,7 +9,7 @@ const CommonLayout: React.FC = () => {
   return (
     <Layout>
       <Header />
-      <Content className='!bg-[#D9EEE1]' style={{ minHeight: 'calc(100vh - 134px)' }}>
+      <Content className='!bg-[#193d3d]' style={{ minHeight: 'calc(100vh - 134px)' }}>
         <Outlet />
       </Content>
       <Footer />
