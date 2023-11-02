@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import axiosClient from '~/utils/api/AxiosClient'
 
 export interface AccountState {
@@ -30,13 +30,14 @@ export const accountSlice = createSlice({
   name: 'account',
   initialState,
   reducers: {
-    logout: (state) => {
-      state.isLogin = false
-      state.error = null
-      state.isLoading = false
+    logout: () => {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]')
       localStorage.clear()
       localStorage.setItem('cart', JSON.stringify(cart))
+      return initialState
+    },
+    setAccessToken: (state, action: PayloadAction<string>) => {
+      state.accessToken = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -62,6 +63,6 @@ export const accountSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { logout } = accountSlice.actions
+export const { logout, setAccessToken } = accountSlice.actions
 
 export const AccountReducer = accountSlice.reducer

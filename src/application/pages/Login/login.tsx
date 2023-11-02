@@ -1,10 +1,8 @@
 import React from 'react'
 import { Button, Form, Input, App } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
-
 import { useAppDispatch, useAppSelector } from '~/application/hooks/reduxHook'
 import { loginAsync } from '~/redux/slices'
-import { LocalStorageUtils, LOCAL_STORAGE_KEY } from '~/utils/cache/LocalStorage'
 
 type FieldType = {
   email?: string
@@ -23,12 +21,7 @@ const LoginPage: React.FC = () => {
         email: values.email,
         password: values.password
       }
-      // await dispatch(loginAsync(payload)).unwrap()
-      const response = await dispatch(loginAsync(payload)).unwrap()
-      console.log(response)
-      const { accessToken } = response
-      const cache = new LocalStorageUtils()
-      cache.setItem(LOCAL_STORAGE_KEY.JWT, accessToken)
+      await dispatch(loginAsync(payload)).unwrap()
       form.resetFields()
       notification.success({ message: `Chào mừng bạn đến với BFS` })
       navigate('/userprofile')

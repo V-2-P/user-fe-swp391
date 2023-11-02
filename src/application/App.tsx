@@ -3,6 +3,7 @@ import { StyleProvider } from '@ant-design/cssinjs'
 import locale from 'antd/locale/vi_VN'
 import Router from './routes/router'
 import { useAppSelector } from '~/application/hooks/reduxHook'
+import { AxiosInterceptor } from '~/utils/api/AxiosClient'
 
 const App: React.FC = () => {
   const { theme } = useAppSelector((state) => state.app)
@@ -16,7 +17,9 @@ const App: React.FC = () => {
     >
       <StyleProvider hashPriority='high'>
         <AntApp>
-          <Router />
+          <AxiosInterceptor>
+            <Router />
+          </AxiosInterceptor>
         </AntApp>
       </StyleProvider>
     </ConfigProvider>
