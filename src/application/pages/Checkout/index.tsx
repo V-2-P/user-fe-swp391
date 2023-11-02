@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { EnvironmentOutlined } from '@ant-design/icons'
 import { App, Button, Form, Image, Input, List, Select, Tag } from 'antd'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '~/application/hooks/reduxHook'
 import useFetchData from '~/application/hooks/useFetchData'
@@ -9,11 +9,6 @@ import axiosClient from '~/utils/api/AxiosClient'
 import { formatCurrencyVND } from '~/utils/numberUtils'
 
 const Checkout: React.FC = () => {
-  const [method, _setMethod] = useState([
-    { id: 1, name: 'Giao hàng nhanh', price: 40000 },
-    { id: 2, name: 'Giao hàng tiết kiệm', price: 20000 }
-  ])
-
   const [payment, _setPayment] = useState([
     { id: 'cast', name: 'Thanh toán trực tiếp' },
     { id: 'vnpay', name: 'Thanh toán qua cổng VNPay' }
@@ -22,11 +17,16 @@ const Checkout: React.FC = () => {
   const cart = JSON.parse(localStorage.getItem('cart') || '[]')
   const birdIds = cart.map((e: any) => e.id)
   const [_loading, _error, response] = useFetchData(`/birds/by-ids?ids=${birdIds.join(',')}`)
+  const [loadingShipping, _errorShipping, responseShipping] = useFetchData(`/shippingmethod`)
+  const [loadingUser, errorUser, responseUser] = useFetchData(`/user/me`)
+  console.log(responseShipping)
   const [loadingCheckout, setLoadingCheckout] = useState(false)
   const { notification } = App.useApp()
   const [form] = Form.useForm()
   const navigate = useNavigate()
   const { userId } = useAppSelector((state) => state.account)
+
+  console.log(responseUser)
 
   const onFinish = (values: any) => {
     setLoadingCheckout(true)
@@ -37,6 +37,7 @@ const Checkout: React.FC = () => {
       phoneNumber: values.phoneNumber,
       shippingAddress: values.shippingAddress,
       paymentMethod: values.paymentMethod,
+      shippingMethod: values.shippingMethod,
       // voucher: '1',
       cartItems: cart.map((item: any) => ({
         birdId: item.id,
@@ -76,19 +77,19 @@ const Checkout: React.FC = () => {
     return sum
   }
 
+  useEffect(() => {
+    if (!loadingUser && !errorUser && response) {
+      form.setFieldsValue({
+        fullName: responseUser?.data.fullName,
+        shippingAddress: '',
+        phoneNumber: responseUser?.data.phoneNumber
+      })
+    }
+  }, [loadingUser, errorUser, responseUser, response, form])
+
   return (
     <div style={{ background: '#038777' }} className='px-[10%] py-5 space-y-5'>
-      <Form
-        form={form}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        layout='vertical'
-        initialValues={{
-          fullName: 'Huu Nam',
-          shippingAddress: 'Binh Duong',
-          phoneNumber: '0349061446'
-        }}
-      >
+      <Form form={form} onFinish={onFinish} onFinishFailed={onFinishFailed} layout='vertical'>
         <div className='bg-white p-3 space-y-2'>
           <div className='flex'>
             <EnvironmentOutlined />
@@ -183,19 +184,29 @@ const Checkout: React.FC = () => {
                 <div className='w-[10%]'></div>
                 <p className='my-1 w-[30%] text-sm font-semibold'>Phương thức vận chuyển </p>
                 <div className='w-[50%]'>
-                  <Select
-                    placeholder={'Vui lòng chọn phương thức vận chuyển'}
-                    style={{ width: '100%' }}
-                    options={method.map((e) => ({
-                      value: e.id,
-                      label: (
-                        <span>
-                          {e.name}{' '}
-                          {<Tag color={e.id === 1 ? 'red' : 'yellow'}>{formatCurrencyVND(e.price ? e.price : 0)}</Tag>}
-                        </span>
-                      )
-                    }))}
-                  />
+                  <Form.Item
+                    name='shippingMethod'
+                    rules={[{ required: true, message: 'Xin hãy chọn phương thức vận chuyển' }]}
+                  >
+                    <Select
+                      loading={loadingShipping}
+                      placeholder={'Vui lòng chọn phương thức vận chuyển'}
+                      style={{ width: '100%' }}
+                      options={responseShipping?.data?.map((e: any) => ({
+                        value: e.id,
+                        label: (
+                          <span>
+                            {e.name}{' '}
+                            {
+                              <Tag color={e.id === 1 ? 'red' : 'yellow'}>
+                                {formatCurrencyVND(e.shippingMoney ? e.shippingMoney : 0)}
+                              </Tag>
+                            }
+                          </span>
+                        )
+                      }))}
+                    />
+                  </Form.Item>
                 </div>
               </div>
             </List.Item>
