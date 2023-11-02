@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Button, InputNumber, List, Empty, Rate, Image } from 'antd'
 import { ArrowRightOutlined, ArrowLeftOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Carousel from 'react-multi-carousel'
 import { PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import { Products } from '~/application/components/shared/ListOfBird'
@@ -28,6 +28,10 @@ export const ShoppingCart = () => {
 
   const [cart, setCart] = useState<any[]>([])
   const [abc, setAbc] = useState(false)
+  const navigate = useNavigate()
+  const changePage = (page: string) => {
+    navigate(page)
+  }
 
   const handleIncrease = (id: number) => {
     let cart = JSON.parse(localStorage.getItem('cart') || '[]')
@@ -124,8 +128,7 @@ export const ShoppingCart = () => {
                       />
                     </div>
                     <div className=' space-y-2 w-[15%] flex-col mt-0'>
-                      <p className='font-semibold'>{cart[index]?.name}</p>
-                      <div className='bg-red-500 text-center text-white'>Tag giảm giá</div>
+                      <p className='font-semibold text-base'>{cart[index]?.name}</p>
                     </div>
                     <div className='w-[5%]'></div>
                     <div className='ml-[10%] w-[8%]'>
@@ -176,7 +179,7 @@ export const ShoppingCart = () => {
                   <p>Tổng tiền: {formatCurrencyVND(calculateTotalPrice())}</p>
                 </div>
                 <div className='w-[15%]'>
-                  <Button href='/checkout' className='!bg-green-800 !text-white'>
+                  <Button onClick={() => changePage('/checkout')} className='!bg-green-800 !text-white'>
                     Mua hàng
                   </Button>
                 </div>

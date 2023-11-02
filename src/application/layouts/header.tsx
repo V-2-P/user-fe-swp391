@@ -21,6 +21,17 @@ const Header: React.FC = () => {
     },
     {
       label: (
+        <Link className='flex justify-center items-center' to='/order'>
+          Đơn hàng
+        </Link>
+      ),
+      key: '/order'
+    },
+    {
+      type: 'divider'
+    },
+    {
+      label: (
         <Button type='link' className='w-full' onClick={() => dispatch(logout())}>
           Logout
         </Button>

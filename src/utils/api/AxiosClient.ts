@@ -46,12 +46,11 @@ export const responseErrorInterceptor = async (error: any) => {
     originalRequest._retry = true
 
     const response = await axiosClient.post('/auth/refresh')
-
+    console.log(response)
     const { accessToken } = response.data
     const storage = new LocalStorageUtils()
     storage.setItem(LOCAL_STORAGE_KEY.JWT, accessToken)
     originalRequest.headers.Authorization = `Bearer ${accessToken}`
-
     return axiosClient(originalRequest)
   }
 
