@@ -1,38 +1,120 @@
-import { PlusOutlined, UserOutlined } from '@ant-design/icons'
-import { Avatar, Button, Form, Input, Modal, Space } from 'antd'
-import React, { useState } from 'react'
+import { UserOutlined } from '@ant-design/icons'
+import { Avatar, Button, DatePicker, Form, Input, Modal, Space, notification } from 'antd'
+import dayjs, { Dayjs } from 'dayjs'
+import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import useFetchData from '~/application/hooks/useFetchData'
+import { reFetchData } from '~/redux/slices'
+import axiosClient from '~/utils/api/AxiosClient'
+interface RoleEntity {
+  id: number
+  name: string
+}
 
+interface User {
+  createdAt: string
+  updatedAt: string
+  id: number
+  fullName: string
+  phoneNumber: string
+  email: string
+  address: string
+  imageUrl: string
+  roleEntity: RoleEntity
+  emailVerified: boolean
+  dob: string
+  isActive: number
+}
 const Profile: React.FC = () => {
   const [file, setFile] = useState<any | null>(null)
   function handleChange(e: any) {
     setFile(URL.createObjectURL(e.target.files[0]))
   }
   const [isModalPasswordOpen, setIsModalPasswordOpen] = useState(false)
-  const [isModalAdressOpen, setIsModalAddressOpen] = useState(false)
-
+  const [loadingUser, errorUser, responseUser] = useFetchData(`user/me`)
+  const [user, setUser] = useState<User>(responseUser?.data)
+  const [loadingUpdate, setLoadingUpdate] = useState(false)
   const [form] = Form.useForm()
+  const [formPassword] = Form.useForm()
+  const dispatch = useDispatch()
 
   const showModalPassword = () => {
     setIsModalPasswordOpen(true)
-  }
-  const showModalAddress = () => {
-    setIsModalAddressOpen(true)
   }
 
   const handleOk = () => {
     setIsModalPasswordOpen(false)
   }
 
-  const handleOkAddress = () => {
-    setIsModalAddressOpen(false)
-  }
-
   const handleCancel = () => {
     setIsModalPasswordOpen(false)
   }
 
-  const handleCancleAddress = () => {
-    setIsModalAddressOpen(false)
+  useEffect(() => {
+    if (!loadingUser && !errorUser && responseUser) {
+      setUser(responseUser?.data)
+      form.setFieldsValue({
+        fullName: responseUser.data.fullName,
+        email: responseUser.data.email,
+        phoneNumber: responseUser.data.phoneNumber,
+        address: responseUser.data.address,
+        dob: dayjs(responseUser.data.dob)
+      })
+    }
+  }, [loadingUser, errorUser, responseUser, form])
+
+  const onUpdate = (values: any) => {
+    setLoadingUpdate(true)
+    const dayjs = values.dob as Dayjs
+    values.dob = dayjs.format('YYYY-MM-DD') as string
+    const payload = {
+      fullName: values.fullName,
+      email: values.email,
+      phoneNumber: values.phoneNumber,
+      address: values.address,
+      dob: values.dob
+    }
+    console.log(payload)
+    axiosClient
+      .put('/user', payload)
+      .then((response) => {
+        setLoadingUpdate(false)
+        if (response) {
+          notification.success({ message: 'Cập nhật thành công' })
+          dispatch(reFetchData())
+        } else {
+          notification.error({ message: 'Cập nhật thất bại' })
+        }
+      })
+      .catch((err) => {
+        setLoadingUpdate(false)
+        notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+      })
+  }
+
+  const onUpdatePassword = (values: any) => {
+    setLoadingUpdate(false)
+    const payload = {
+      currentPassword: values.currentPassword,
+      password: values.password,
+      confirmedPassword: values.confirmedPassword
+    }
+    console.log(payload)
+    axiosClient
+      .put('/user', payload)
+      .then((response) => {
+        setLoadingUpdate(false)
+        if (response) {
+          notification.success({ message: 'Đổi mật khẩu thành công' })
+          dispatch(reFetchData())
+        } else {
+          notification.success({ message: 'Đổi mật khẩu thất bại' })
+        }
+      })
+      .catch((err) => {
+        setLoadingUpdate(false)
+        notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+      })
   }
 
   return (
@@ -41,6 +123,8 @@ const Profile: React.FC = () => {
       <div className='lg:w-[10%]'></div>
       <div className='w-full md:w-[70%] lg:w-[60%] bg-white px-7 py-3 space-y-7'>
         <Form
+          form={form}
+          onFinish={onUpdate}
           labelCol={{ span: 5, style: { marginRight: '0%', textAlign: 'left' } }}
           wrapperCol={{ span: 18 }}
           layout='horizontal'
@@ -50,8 +134,8 @@ const Profile: React.FC = () => {
           <div>
             <Space direction='vertical' size={16}>
               <Space wrap size={16}>
-                <Avatar src={file} size='large' icon={<UserOutlined />} />
-                <p>Tên người dùng</p>
+                <Avatar src={user?.imageUrl} size='large' icon={<UserOutlined />} />
+                <p>{user?.fullName}</p>
               </Space>
             </Space>
           </div>
@@ -60,57 +144,23 @@ const Profile: React.FC = () => {
             <p>Quản lý thông tin để bảo mật tài khoản</p>
           </div>
           <div>
-            <Form.Item label='Tên đăng nhập' name='userName'>
-              <Input type='text' defaultValue='Tên đăng nhập của người dùng' readOnly />
-            </Form.Item>
             <Form.Item label='Tên' name='fullName'>
-              <Input type='text' defaultValue={'Họ và tên người dùng'} />
+              <Input type='text' />
             </Form.Item>
             <Form.Item label='Email' name='email'>
-              <Input type='text' defaultValue={'***' + '@' + 'gmail.com'} />
+              <Input type='text' readOnly />
             </Form.Item>
             <Form.Item label='Số điện thoại' name='phoneNumber'>
-              <Input type='number' maxLength={11} defaultValue={'0123456789'} />
+              <Input type='number' maxLength={11} />
             </Form.Item>
-            <div className='w-[90%] mx-auto border border-solid border-t-black'></div>
-            <Form.Item className='!mt-5' label='Thông tin địa chỉ' name='address'>
-              <Button
-                className='!bg-green-800 !rounded-none !text-white md:!ml-[55%] lg:!ml-[75%]'
-                onClick={showModalAddress}
-                icon={<PlusOutlined />}
-              >
-                Thêm địa chỉ mới
-              </Button>
+            <Form.Item label='Địa chỉ' name='address'>
+              <Input />
             </Form.Item>
-            <div className='flex flex-col lg:flex-row'>
-              <div className='w-[50%] flex-col'>
-                <p>Tên người dùng | Số điện thoại</p>
-                <p>Địa chỉ</p>
-                <p>Địa chỉ</p>
-              </div>
-              <div className='w-[50%] flex space-x-5 mt-6'>
-                <div className='w-[50%]'>
-                  <Form.Item wrapperCol={{ span: 100 }}>
-                    <Button
-                      htmlType='submit'
-                      className='!w-[100%] m-auto !bg-gray-500 !text-white !flex !justify-center'
-                    >
-                      Cập nhật
-                    </Button>
-                  </Form.Item>
-                </div>
-                <div className='w-[39%]'>
-                  <Form.Item wrapperCol={{ span: 100 }}>
-                    <Button
-                      htmlType='submit'
-                      className='!w-[100%] m-auto !bg-gray-500 !text-white !flex !justify-center'
-                    >
-                      Xóa
-                    </Button>
-                  </Form.Item>
-                </div>
-              </div>
-            </div>
+            <Form.Item label='Ngày sinh' name='dob'>
+              <DatePicker />
+            </Form.Item>
+            <div className='w-[90%] mx-auto'></div>
+
             <div className='w-[90%] mx-auto border border-solid border-t-black'></div>
             <div className='mt-5'>
               <Form.Item wrapperCol={{ span: 100 }}>
@@ -138,19 +188,30 @@ const Profile: React.FC = () => {
 
       {/* Đổi mật khẩu modal */}
       <Modal footer={null} title='Đổi mật khẩu' open={isModalPasswordOpen} onOk={handleOk} onCancel={handleCancel}>
-        <Form form={form} name='dependencies' autoComplete='off' style={{ maxWidth: 600 }} layout='vertical'>
-          <Form.Item label='Mật khẩu cũ' name='oldPassword' rules={[{ required: true, message: 'Điền mật khẩu cũ' }]}>
+        <Form
+          onFinish={onUpdatePassword}
+          form={formPassword}
+          name='dependencies'
+          autoComplete='off'
+          style={{ maxWidth: 600 }}
+          layout='vertical'
+        >
+          <Form.Item
+            label='Mật khẩu cũ'
+            name='currentPassword'
+            rules={[{ required: true, message: 'Điền mật khẩu cũ' }]}
+          >
             <Input type='password' />
           </Form.Item>
 
-          <Form.Item label='Mật khẩu mới' name='newPassword' rules={[{ required: true, message: 'Điền mật khẩu mới' }]}>
+          <Form.Item label='Mật khẩu mới' name='password' rules={[{ required: true, message: 'Điền mật khẩu mới' }]}>
             <Input type='password' />
           </Form.Item>
 
           {/* Field */}
           <Form.Item
             label='Xác nhận mật khẩu'
-            name='password2'
+            name='confirmedPassword'
             dependencies={['password']}
             rules={[
               {
@@ -170,41 +231,8 @@ const Profile: React.FC = () => {
             <Input type='password' />
           </Form.Item>
           <Form.Item wrapperCol={{ span: 100 }}>
-            <Button type='primary' htmlType='submit' className='!w-full !bg-green-700'>
+            <Button type='primary' loading={loadingUpdate} htmlType='submit' className='!w-full !bg-green-700'>
               Đổi mật khẩu
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Thêm địa chỉ */}
-      <Modal
-        footer={null}
-        title='Thêm địa chỉ'
-        open={isModalAdressOpen}
-        onOk={handleOkAddress}
-        onCancel={handleCancleAddress}
-      >
-        <Form form={form} name='dependencies' autoComplete='off' style={{ maxWidth: 600 }} layout='vertical'>
-          <Form.Item name={'number'} label={'Số nhà'} rules={[{ required: true, message: 'Hãy nhập số nhà' }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name={'ward'} label={'Phường/Xã'} rules={[{ required: true, message: 'Hãy nhập Phường/Xã' }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name={'district'} label={'Huyện'} rules={[{ required: true, message: 'Hãy nhập huyện' }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name={'province'}
-            label={'Tỉnh/Thành phố'}
-            rules={[{ required: true, message: 'Hãy nhập Tỉnh/Thành phố' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item wrapperCol={{ span: 100 }}>
-            <Button type='primary' htmlType='submit' className='!w-full !bg-green-700'>
-              Xác nhận
             </Button>
           </Form.Item>
         </Form>
