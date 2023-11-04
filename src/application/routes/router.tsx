@@ -38,11 +38,11 @@ const Router: React.FC = () => {
               <Route path='/' element={<Landing />} />
               <Route element={<CompareLayout />}>
                 <Route path='/productdetail/:id' element={<ProductDetail />} />
-                <Route path='/compare' element={<ComparePage />} />
                 <Route path='/viewall' element={<ViewAllBird />} />
                 <Route path='/productlist' element={<ProductList />} />
                 <Route path='/shoppingcart' element={<ShoppingCart />} />
               </Route>
+              <Route path='/compare' element={<ComparePage />} />
               <Route path='/test' element={<Information />} />
               <Route path='/userprofile' element={<Profile />} />
               <Route path='/login' element={<Login />} />

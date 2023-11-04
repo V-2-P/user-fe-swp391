@@ -122,7 +122,9 @@ export const FeedbackOrder: React.FC<OrderDetailProps> = ({ orderId }) => {
   console.log(bird?.orderDetails)
   return (
     <div>
-      <Button onClick={showFeedbackModal}>Đánh giá</Button>
+      <Button type='primary' onClick={showFeedbackModal}>
+        Đánh giá
+      </Button>
       <Modal
         footer={false}
         title={`Mã đơn hàng : ${orderId}`}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import 'react-multi-carousel/lib/styles.css'
-import { Button, Descriptions, Image, Rate, Skeleton, Tabs, Tag } from 'antd'
+import { App, Button, Descriptions, Image, Rate, Skeleton, Tabs, Tag } from 'antd'
 import { Products } from '~/application/components/shared/ListOfBird'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Carousel from 'react-multi-carousel'
@@ -89,7 +89,7 @@ const ProductDetail: React.FC<HomeProps> = () => {
 
   const [loading, error, response] = useFetchData(`/birds/detail/${id}`)
   const [feedbackLoading, feedbackError, feedbackResponse] = useFetchData(`/feedbackbirds/bird/${id}`)
-
+  const { notification } = App.useApp()
   const birdData: BirdData = response?.data
   const feedbackData: BirdFeedback[] = feedbackResponse?.data
 
@@ -125,6 +125,33 @@ const ProductDetail: React.FC<HomeProps> = () => {
     }
   ]
 
+  const addToCompare = (bird: any) => {
+    let compare = JSON.parse(localStorage.getItem('compare') || '[]') as any
+    if (compare.length === 3) {
+      notification.warning({ message: 'Danh sách so sánh đã đủ' })
+      return
+    }
+    const existingCartItem = compare.find((item: any) => item.id === bird.id)
+    if (existingCartItem) {
+      compare = compare.map((item: any) => (item.id === bird.id ? { ...item } : item))
+    } else {
+      compare = [...compare, bird]
+    }
+    localStorage.setItem('compare', JSON.stringify(compare))
+  }
+
+  const addToCart = (id: number) => {
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]')
+    const existingCartItem = cart.find((item: any) => item.id === id)
+    if (existingCartItem) {
+      cart = cart.map((item: any) => (item.id === id ? { ...item, quantity: item.quantity + 1 } : item))
+    } else {
+      cart = [...cart, { id, quantity: 1 }]
+    }
+    localStorage.setItem('cart', JSON.stringify(cart))
+    notification.success({ message: 'Thêm vào giỏ hàng thành công' })
+  }
+
   return (
     <div className='object-fill my-0 lg:p-[1%] px-[2%] lg:px-[10%]' style={{ background: '#038777' }}>
       <div className='border-solid border-4 border-gray-100 rounded-t-lg bg-gray-200 '>
@@ -154,13 +181,14 @@ const ProductDetail: React.FC<HomeProps> = () => {
               {/* Thông tin chim */}
 
               <div className='flex flex-col w-full object-cover lg:p-10'>
-                <div className='text-lg space-y-3'>
+                <div className='text-lg space-y-5'>
                   <div className='flex'>
                     <h1 className='text-2xl text-clip overflow-clip'>{birdData?.name}</h1>
                     <div className='my-auto'>
                       <Button
+                        onClick={() => addToCompare(birdData)}
                         icon={<PlusOutlined />}
-                        className='ml-10 !text-sm w-[25%] lg:w-full relative !text-green-800 !border-green-800'
+                        className='ml-10 !text-sm w-[full] lg:w-full relative !text-green-800 !border-green-800'
                       >
                         <span className='!text-xs'>So sánh</span>
                       </Button>
@@ -168,13 +196,13 @@ const ProductDetail: React.FC<HomeProps> = () => {
                   </div>
 
                   <div className='flex text-sm'>
-                    <div className='flex w-[45%] lg:w-[30%] space-x-2 border-r-2 border-black'>
+                    <div className='flex w-[45%] lg:w-[30%] space-x-2 '>
                       <p className='w-[fit] my-auto border-b-2 border-red-500 text-base text-red-500'>
                         {birdData?.totalRating}
                       </p>
                       <Rate value={birdData?.totalRating} allowHalf disabled className='w-full !text-base' />
                     </div>
-                    <Link to='/' className='w-[30%] lg:w-[20%] flex justify-center border-r-2 border-black ml-2'>
+                    <Link to='/' className='w-[30%] lg:w-[20%] flex justify-left ml-2'>
                       <span className='w-[fit] my-auto !text-black border-b-2 border-black mr-2'>
                         {birdData?.totalRating}
                       </span>
@@ -204,6 +232,7 @@ const ProductDetail: React.FC<HomeProps> = () => {
                   <div className='h-full w-full text-sm flex'>
                     <div className='flex w-full'>
                       <Button
+                        onClick={() => addToCart(birdData.id)}
                         icon={<ShoppingCartOutlined />}
                         className='w-[48%] !border-green-700 !text-green-700 !bg-green-50'
                       >
