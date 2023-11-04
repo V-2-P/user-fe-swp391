@@ -1,9 +1,10 @@
-import { Button, Col, Image, Result, Row, Skeleton, Typography } from 'antd'
+import { App, Button, Col, Image, Result, Row, Skeleton, Typography } from 'antd'
 import { PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import useFetchData from '~/application/hooks/useFetchData'
 import { CloseCircleOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { FloatButton } from 'antd'
+import { formatCurrencyVND } from '~/utils/numberUtils'
 
 interface dataType {
   id: number
@@ -19,6 +20,7 @@ const { Paragraph, Text } = Typography
 export const ViewAllBird: React.FC = () => {
   const [loading, error, response] = useFetchData(`/birds/all`)
   const birdData: dataType[] = response?.data
+  const { notification } = App.useApp()
 
   console.log(response)
 
@@ -26,6 +28,33 @@ export const ViewAllBird: React.FC = () => {
 
   const click = (id: any) => {
     navigate(`/productdetail/${id}`)
+  }
+
+  const addToCompare = (bird: any) => {
+    let compare = JSON.parse(localStorage.getItem('compare') || '[]') as any
+    if (compare.length === 3) {
+      notification.warning({ message: 'Danh sách so sánh đã đủ' })
+      return
+    }
+    const existingCartItem = compare.find((item: any) => item.id === bird.id)
+    if (existingCartItem) {
+      compare = compare.map((item: any) => (item.id === bird.id ? { ...item } : item))
+    } else {
+      compare = [...compare, bird]
+    }
+    localStorage.setItem('compare', JSON.stringify(compare))
+  }
+
+  const addToCart = (id: number) => {
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]')
+    const existingCartItem = cart.find((item: any) => item.id === id)
+    if (existingCartItem) {
+      cart = cart.map((item: any) => (item.id === id ? { ...item, quantity: item.quantity + 1 } : item))
+    } else {
+      cart = [...cart, { id, quantity: 1 }]
+    }
+    localStorage.setItem('cart', JSON.stringify(cart))
+    notification.success({ message: 'Thêm vào giỏ hàng thành công' })
   }
 
   return (
@@ -91,22 +120,26 @@ export const ViewAllBird: React.FC = () => {
                           <div className='flex flex-col text-xs space-y-3'>
                             <div className='flex flex-col justify-center w-full space-y-3'>
                               <p className='break-words w-full text-left text-sm'>{list.name}</p>
-                              <p className='break-words w-full text-sm text-red-500'>${list.price}</p>
+                              <p className='break-words w-full text-sm text-red-500'>
+                                {list.price ? formatCurrencyVND(list.price) : 0}
+                              </p>
                             </div>
                             <div className='flex w-full '>
                               <Button
+                                onClick={() => addToCompare(list)}
                                 size='middle'
                                 icon={<PlusOutlined />}
                                 className='!w-[100%] !border-green-700 lg:w-[50%] text-center !p-0 !text-xs !text-green-700'
                               >
-                                Compare
+                                So sánh
                               </Button>
                               <Button
+                                onClick={() => addToCart(list.id)}
                                 size='middle'
                                 icon={<ShoppingCartOutlined />}
                                 className='!w-[100%] lg:mt-0 lg:w-[50%] text-center !p-0 m-0 lg:mr-1 lg:ml-2 !text-xs !bg-green-700 !text-white'
                               >
-                                Add to cart
+                                Thêm giỏ hàng
                               </Button>
                             </div>
                           </div>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { App, Avatar, Button, Card, Image, List, Modal, Select, Space } from 'antd'
+import { App, Avatar, Button, Card, Divider, Image, List, Modal, Select, Space } from 'antd'
 import useFetchData from '~/application/hooks/useFetchData'
 import { formatCurrencyVND } from '~/utils/numberUtils'
 import { PlusOutlined, CloseOutlined } from '@ant-design/icons'
@@ -185,7 +185,10 @@ export const ComparePage = () => {
             <tr>
               <th className='w-[10%] text-left'>
                 {savedCompare.map((e: any) => (
-                  <span className='text-yellow-500'>{e?.name}</span>
+                  <>
+                    <span className='text-yellow-500'>{e?.name}</span>
+                    <Divider />
+                  </>
                 ))}
               </th>
               {savedCompare.length > 0 ? (
