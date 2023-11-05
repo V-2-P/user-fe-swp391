@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { LoginPayload, LoginResponse, Role, loginAPI } from '~/utils/api'
+import { Role, LoginPayload, loginAPI, LoginResponse } from '~/utils/api/auth'
 
 export interface AccountState {
   isLogin: boolean
