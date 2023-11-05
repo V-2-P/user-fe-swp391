@@ -3,11 +3,7 @@ import { Button, Form, Input, App } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '~/application/hooks/reduxHook'
 import { loginAsync } from '~/redux/slices'
-
-type FieldType = {
-  email?: string
-  password?: string
-}
+import { LoginPayload } from '~/utils/api/auth'
 
 const LoginPage: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -15,16 +11,16 @@ const LoginPage: React.FC = () => {
   const [form] = Form.useForm()
   const { notification, message } = App.useApp()
   const { isLoading } = useAppSelector((state) => state.account)
-  const onFinish = async (values: FieldType) => {
+  const onFinish = async (values: LoginPayload) => {
     try {
-      const payload = {
+      const payload: LoginPayload = {
         email: values.email,
         password: values.password
       }
       await dispatch(loginAsync(payload)).unwrap()
       form.resetFields()
       notification.success({ message: `Chào mừng bạn đến với BFS` })
-      navigate('/userprofile')
+      navigate('/', { replace: true })
     } catch (err) {
       notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
     }
@@ -52,11 +48,11 @@ const LoginPage: React.FC = () => {
           autoComplete='off'
           className='space-y-5'
         >
-          <Form.Item<FieldType> name='email' rules={[{ required: true, message: 'Please input your email!' }]}>
+          <Form.Item<LoginPayload> name='email' rules={[{ required: true, message: 'Please input your email!' }]}>
             <Input placeholder='Email' className='!border-black !border-2 w-full' />
           </Form.Item>
 
-          <Form.Item<FieldType> name='password' rules={[{ required: true, message: 'Please input your password!' }]}>
+          <Form.Item<LoginPayload> name='password' rules={[{ required: true, message: 'Please input your password!' }]}>
             <Input.Password placeholder='Password' className='!border-black !border-2' />
           </Form.Item>
 

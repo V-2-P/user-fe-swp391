@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '~/application/hooks/reduxHook'
 import { setAccessToken, logout } from '~/redux/slices'
 
@@ -25,7 +26,8 @@ type AxiosInterceptorTypes = {
 const AxiosInterceptor: React.FC<AxiosInterceptorTypes> = ({ children }) => {
   const [isSet, setIsSet] = useState(false)
   const dispatch = useAppDispatch()
-  const { accessToken } = useAppSelector((state) => state.account)
+  const navigate = useNavigate()
+  const { accessToken, refreshToken } = useAppSelector((state) => state.account)
 
   useEffect(() => {
     /* Request Interceptor */
@@ -63,12 +65,17 @@ const AxiosInterceptor: React.FC<AxiosInterceptorTypes> = ({ children }) => {
       if (error.response.data.code === 401 && !originalRequest._retry) {
         try {
           originalRequest._retry = true
-          const response = await authClient.post('/auth/refresh')
+          const response = await authClient.post(
+            '/auth/refresh',
+            { refreshToken: refreshToken },
+            { withCredentials: true }
+          )
           dispatch(setAccessToken(response.data.data.accessToken))
           originalRequest.headers['Authorization'] = `Bearer ${response.data.data.accessToken}`
           return axiosClient(originalRequest)
         } catch (e) {
           dispatch(logout())
+          navigate('/login')
           if (error.response && error.response.data.message) {
             return Promise.reject(error.response.data.message)
           } else if (error.message) {
@@ -86,15 +93,16 @@ const AxiosInterceptor: React.FC<AxiosInterceptorTypes> = ({ children }) => {
         return Promise.reject('Có lỗi bất ngờ xảy ra !!!')
       }
     }
-
+    setIsSet(true)
     const interceptorReq = axiosClient.interceptors.request.use(requestInterceptor, requestErrorInterceptor)
     const interceptorRes = axiosClient.interceptors.response.use(responseInterceptor, responseErrorInterceptor)
-    setIsSet(true)
+
     return () => {
       axiosClient.interceptors.request.eject(interceptorReq)
       axiosClient.interceptors.response.eject(interceptorRes)
     }
-  }, [accessToken, dispatch])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken, refreshToken, dispatch])
 
   return isSet && children
 }

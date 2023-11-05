@@ -4,11 +4,13 @@ import { UserOutlined } from '@ant-design/icons'
 import Menu from './menu'
 import type { MenuProps } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '~/application/hooks/reduxHook'
+import { useAppDispatch } from '~/application/hooks/reduxHook'
 import { logout } from '~/redux/slices'
+import { useAuth } from '../hooks/useAuth'
+import { getUserImage } from '~/utils/imageUtils'
 
 const Header: React.FC = () => {
-  const { isLogin } = useAppSelector((state) => state.account)
+  const { account } = useAuth()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const items: MenuProps['items'] = [
@@ -59,14 +61,20 @@ const Header: React.FC = () => {
           <Menu />
         </div>
         <div className='absolute right-0 cursor-pointer'>
-          {!isLogin ? (
+          {!account.isLogin ? (
             <Space size='middle'>
               <Button onClick={() => navigate('/login')}>Đăng nhập</Button>
               <Button onClick={() => navigate('/register')}>Đăng kí</Button>
             </Space>
           ) : (
             <Dropdown menu={{ items }} trigger={['click']}>
-              <Avatar size='large' icon={<UserOutlined />} />
+              <Avatar
+                size='large'
+                src={getUserImage(account.imageUrl)}
+                icon={<UserOutlined />}
+                crossOrigin='anonymous'
+                alt='user-image'
+              />
             </Dropdown>
           )}
         </div>

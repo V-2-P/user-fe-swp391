@@ -6,6 +6,7 @@ import Category from './category'
 // import { useNavigate } from 'react-router-dom'
 import { Content } from 'antd/es/layout/layout'
 import Sider from 'antd/es/layout/Sider'
+import Header from '~/application/layouts/header'
 type HomeProps = object
 
 const ProductList: React.FC<HomeProps> = () => {
@@ -22,23 +23,30 @@ const ProductList: React.FC<HomeProps> = () => {
 
   return (
     <>
-      <Layout hasSider style={{ background: '#bdd4cd' }}>
-        {/*Filter */}
-        {/* <Button
-          type='primary'
-          onClick={toggleSidebar}
-          className='lg:w-none'
-        /> */}
-        <Sider width={250} className='overflow-auto !max-h-fit !fixed left-0 top-[62px] bottom-0'>
-          <Category />
-        </Sider>
-        <Layout className='lg:ml-[250px]'>
-          <Content>
-            {/*List */}
-            <div className='w-full'>
+      <Layout style={{ minHeight: 'calc(100vh - 134px)' }}>
+        <Header />
+        <Layout>
+          <Sider
+            width={200}
+            style={{
+              overflow: 'auto',
+              height: '100vh',
+              position: 'fixed',
+              left: 0,
+              top: 64,
+              bottom: 0,
+              zIndex: 999999
+            }}
+          >
+            <Category />
+          </Sider>
+          <Layout style={{ marginLeft: 200 }}>
+            <Content style={{ overflow: 'initial' }}>
+              {/*List */}
               <ListBird />
-            </div>
-          </Content>
+            </Content>
+            <Layout.Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Layout.Footer>
+          </Layout>
         </Layout>
       </Layout>
     </>

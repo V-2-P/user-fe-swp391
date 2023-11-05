@@ -10,6 +10,8 @@ import TextArea from 'antd/es/input/TextArea'
 import useFetchData from '~/application/hooks/useFetchData'
 import { formatCurrencyVND } from '~/utils/numberUtils'
 import { DescriptionsProps } from 'antd/lib'
+import { addItemToCart } from '~/redux/slices'
+import { useAppDispatch } from '~/application/hooks/reduxHook'
 
 const responsive = {
   desktop: {
@@ -64,6 +66,7 @@ type BirdFeedback = {
 type HomeProps = object
 
 const ProductDetail: React.FC<HomeProps> = () => {
+  const dispatch = useAppDispatch()
   const imageList = [
     {
       id: 1,
@@ -140,15 +143,13 @@ const ProductDetail: React.FC<HomeProps> = () => {
     localStorage.setItem('compare', JSON.stringify(compare))
   }
 
-  const addToCart = (id: number) => {
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]')
-    const existingCartItem = cart.find((item: any) => item.id === id)
-    if (existingCartItem) {
-      cart = cart.map((item: any) => (item.id === id ? { ...item, quantity: item.quantity + 1 } : item))
-    } else {
-      cart = [...cart, { id, quantity: 1 }]
+  const addToCart = (bird: BirdData) => {
+    const cartItem = {
+      id: bird.id.toString(),
+      name: bird.name,
+      price: bird.price
     }
-    localStorage.setItem('cart', JSON.stringify(cart))
+    dispatch(addItemToCart(cartItem))
     notification.success({ message: 'Thêm vào giỏ hàng thành công' })
   }
 
@@ -232,7 +233,7 @@ const ProductDetail: React.FC<HomeProps> = () => {
                   <div className='h-full w-full text-sm flex'>
                     <div className='flex w-full'>
                       <Button
-                        onClick={() => addToCart(birdData.id)}
+                        onClick={() => addToCart(birdData)}
                         icon={<ShoppingCartOutlined />}
                         className='w-[48%] !border-green-700 !text-green-700 !bg-green-50'
                       >

@@ -4,7 +4,6 @@ import { Landing, NotFound } from '~/application/pages'
 import Loading from '../components/shared/Loading'
 import ErrorBoundary from './errorBoundary'
 import ProductDetail from '../pages/ProductDetail'
-import Information from '../pages/ProductDetail/information'
 import Profile from '../pages/UserProfile'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
@@ -19,6 +18,8 @@ import { ComparePage } from '../pages/Compare'
 import CompareLayout from '../layouts/compareLayout'
 import { Order } from '../pages/Order'
 import { Pairing } from '../pages/Pairing'
+import PublicRoute from '../components/shared/PublicRoute'
+import PrivateRoute from '../components/shared/PrivateRoute'
 
 const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const location = useLocation()
@@ -34,22 +35,29 @@ const Router: React.FC = () => {
       <ErrorBoundary>
         <Suspense fallback={<Loading />}>
           <Routes>
+            <Route path='/productlist' element={<ProductList />} />
+
             <Route element={<CommonLayout />}>
+              <Route element={<PublicRoute />}>
+                <Route path='/login' element={<Login />} />
+                <Route path='/register' element={<Register />} />
+                <Route path='/verify' element={<VerifyPage />} />
+              </Route>
+
               <Route path='/' element={<Landing />} />
               <Route element={<CompareLayout />}>
                 <Route path='/productdetail/:id' element={<ProductDetail />} />
                 <Route path='/viewall' element={<ViewAllBird />} />
-                <Route path='/productlist' element={<ProductList />} />
                 <Route path='/shoppingcart' element={<ShoppingCart />} />
               </Route>
               <Route path='/compare' element={<ComparePage />} />
-              <Route path='/test' element={<Information />} />
-              <Route path='/userprofile' element={<Profile />} />
-              <Route path='/login' element={<Login />} />
-              <Route path='/register' element={<Register />} />
-              <Route path='/checkout' element={<Checkout />} />
-              <Route path='/verify' element={<VerifyPage />} />
-              <Route path='/order' element={<Order />} />
+
+              <Route element={<PrivateRoute />}>
+                <Route path='/order' element={<Order />} />
+                <Route path='/checkout' element={<Checkout />} />
+                <Route path='/userprofile' element={<Profile />} />
+              </Route>
+
               <Route path='/pairing' element={<Pairing />} />
             </Route>
 

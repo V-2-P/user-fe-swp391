@@ -1,5 +1,5 @@
 import React from 'react'
-import { Menu as AntMenu, Button, Typography } from 'antd'
+import { Menu as AntMenu, Button, ConfigProvider, Typography } from 'antd'
 import type { MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
@@ -27,7 +27,7 @@ const items: MenuItem[] = [
     '/productlist'
   ),
   getItem(
-    <Button className='!bg-[#213F36]'>
+    <Button type='link' className='!bg-[#213F36]'>
       <Text strong className='!text-[#FFF] strong-shadow'>
         Giỏ hàng / Thanh toán
       </Text>
@@ -42,8 +42,19 @@ const Menu: React.FC = () => {
   const onClick: MenuProps['onClick'] = (e) => {
     navigate(e.key)
   }
-
-  return <AntMenu mode='horizontal' selectedKeys={[]} onClick={onClick} items={items} className='!bg-[#D9D9D9]' />
+  return (
+    <ConfigProvider
+      theme={{
+        components: {
+          Menu: {
+            colorPrimary: 'transparent'
+          }
+        }
+      }}
+    >
+      <AntMenu mode='horizontal' selectedKeys={[]} onClick={onClick} items={items} className='!bg-[#D9D9D9]' />
+    </ConfigProvider>
+  )
 }
 
 export default Menu

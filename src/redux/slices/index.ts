@@ -1,2 +1,5 @@
 export * from './appSlice'
 export * from './accountSlice'
+export * from './cartSlice'
+export * from './compareSlice'
+export * from '../api/productApi'

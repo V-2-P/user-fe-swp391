@@ -1,14 +1,16 @@
-import { Button, Space } from 'antd'
+import { Button, Space, Image, Row } from 'antd'
 import React from 'react'
 
 const LandingPage: React.FC = () => {
   return (
     <div className='w-full h-full'>
-      <section style={{ height: 'calc(100vh - 64px)', width: '100%' }} className='relative '>
-        <img
+      <Row style={{ height: 'calc(100vh - 64px)', width: '100%' }} className='relative '>
+        <Image
+          preview={false}
           src='/Landing-banner.jpg'
-          style={{ height: 'calc(100vh - 64px)', width: '100%' }}
-          className='banner object-cover'
+          height='calc(100vh - 64px)'
+          width='100%'
+          className='!object-cover'
         />
         <div className='absolute top-32 left-16'>
           <p
@@ -36,7 +38,7 @@ const LandingPage: React.FC = () => {
             Chào mừng đến “Thiên đường chim cảnh”
           </h1>
         </div>
-      </section>
+      </Row>
       <section style={{ minHeight: 'calc(100vh - 64px)', width: '100%' }} className='text-center px-20 py-10'>
         <Space direction='vertical' size='middle' className='h-full'>
           <Button className='!bg-[#213F36] py-[24px]' size='large' shape='round'>

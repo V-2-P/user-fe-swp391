@@ -39,7 +39,7 @@ interface OrderDetail {
 
 export const Order = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loadingOrder, errorOrder, responseOrder] = useFetchData('/orders/user')
+  const [_loadingOrder, _errorOrder, responseOrder] = useFetchData('/orders/user')
   const navigate = useNavigate()
   const changeToDetail = (id: any) => {
     navigate(`/orderDetail/${id}`)
