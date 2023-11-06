@@ -1,6 +1,6 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { cacher } from '~/utils/rtkQueryCacheUtils'
-
+import { createAsyncThunk } from '@reduxjs/toolkit'
+import { RootState } from '../store'
+import axiosClient from '~/utils/api/AxiosClient'
 interface BirdImage {
   id: number
   imageUrl: string
@@ -35,21 +35,17 @@ export interface Bird {
   quantity: number
   birdImages: BirdImage[]
 }
+export const fetchCartDetailsIfNeeded = createAsyncThunk('cart/fetchDetails', async (_, { getState }) => {
+  const state = getState() as RootState
 
-export const productApi = createApi({
-  reducerPath: 'productApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://api.techx.id.vn/api/v1' }),
-  tagTypes: [...cacher.defaultTags, 'Cart'],
-  endpoints: (builder) => ({
-    getProductDetails: builder.query<Bird[], string>({
-      query: (id) => `birds/by-ids?ids=${id}`,
-      keepUnusedDataFor: 1800,
-      transformResponse: (response: { code: number; message: string; data: Bird[] }) => {
-        return response.data
-      },
-      providesTags: cacher.providesList('Cart')
-    })
-  })
+  const ids = Object.keys(state.cart.items).join(',')
+  const response = await axiosClient.get(`/birds/by-ids?ids=${ids}`)
+  return response.data
 })
+export const fetchCompareDetailsIfNeeded = createAsyncThunk('compare/fetchDetails', async (_, { getState }) => {
+  const state = getState() as RootState
 
-export const { useGetProductDetailsQuery } = productApi
+  const ids = Object.keys(state.compare.items).join(',')
+  const response = await axiosClient.get(`/birds/by-ids?ids=${ids}`)
+  return response.data
+})

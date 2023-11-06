@@ -11,7 +11,7 @@ import { ShoppingCart } from '../pages/ShoppingCart'
 
 import ProductList from '../pages/ProductList'
 import CommonLayout from '../layouts/common'
-import { ViewAllBird } from '../pages/ProductList/allBird'
+import ViewAllBird from '../pages/ProductList/allBird'
 import Checkout from '../pages/Checkout'
 import { VerifyPage } from '../pages/Verify'
 import { ComparePage } from '../pages/Compare'
@@ -20,6 +20,7 @@ import { Order } from '../pages/Order'
 import { Pairing } from '../pages/Pairing'
 import PublicRoute from '../components/shared/PublicRoute'
 import PrivateRoute from '../components/shared/PrivateRoute'
+import ShoppingLayout from '../layouts/shoppingLayout'
 
 const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const location = useLocation()
@@ -35,7 +36,10 @@ const Router: React.FC = () => {
       <ErrorBoundary>
         <Suspense fallback={<Loading />}>
           <Routes>
-            <Route path='/productlist' element={<ProductList />} />
+            <Route element={<ShoppingLayout />}>
+              <Route path='/productlist' element={<ProductList />} />
+              <Route path='/viewall' element={<ViewAllBird />} />
+            </Route>
 
             <Route element={<CommonLayout />}>
               <Route element={<PublicRoute />}>
@@ -47,7 +51,7 @@ const Router: React.FC = () => {
               <Route path='/' element={<Landing />} />
               <Route element={<CompareLayout />}>
                 <Route path='/productdetail/:id' element={<ProductDetail />} />
-                <Route path='/viewall' element={<ViewAllBird />} />
+
                 <Route path='/shoppingcart' element={<ShoppingCart />} />
               </Route>
               <Route path='/compare' element={<ComparePage />} />

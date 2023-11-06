@@ -1,6 +1,5 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { RootState } from '../store'
-import { Bird, productApi } from '../api/productApi'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { Bird, fetchCartDetailsIfNeeded } from '../api/productApi'
 
 // Định nghĩa kiểu cho một mục trong giỏ hàng
 export interface CartItem {
@@ -23,16 +22,6 @@ const initialState: CartState = {
   totalQuantity: 0,
   totalPrice: 0
 }
-
-export const fetchProductDetailsIfNeeded = createAsyncThunk('cart/fetchDetails', async (_, { getState, dispatch }) => {
-  const state = getState() as RootState
-
-  const ids = Object.keys(state.cart.items).join(',')
-  const resultAction = await dispatch(productApi.endpoints.getProductDetails.initiate(ids))
-  if (productApi.endpoints.getProductDetails.matchFulfilled(resultAction)) {
-    return resultAction
-  }
-})
 
 export const cartSlice = createSlice({
   name: 'cart',
@@ -72,9 +61,8 @@ export const cartSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    builder.addMatcher(productApi.endpoints.getProductDetails.matchFulfilled, (state, { payload }) => {
-      payload.forEach((bird: Bird) => {
-        // Assuming that the bird id is a string or you can convert it to string if needed
+    builder.addCase(fetchCartDetailsIfNeeded.fulfilled, (state, action: PayloadAction<Bird[]>) => {
+      action.payload.forEach((bird: Bird) => {
         const id = bird.id
         const cartItem = state.items[id]
         if (cartItem) {

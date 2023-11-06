@@ -1,21 +1,15 @@
 import { useCallback, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from './reduxHook'
-import {
-  clear,
-  addItemToCart,
-  fetchProductDetailsIfNeeded,
-  removeItemFromCart,
-  adjustItemQuantity
-} from '~/redux/slices'
+import { clear, addItemToCart, fetchCartDetailsIfNeeded, removeItemFromCart, adjustItemQuantity } from '~/redux/slices'
 
 export const useCart = () => {
   const cart = useAppSelector((state) => state.cart)
   const dispatch = useAppDispatch()
 
   const addToCart = useCallback(
-    (data: { id: string; price: number }) => {
-      dispatch(addItemToCart(data))
-      dispatch(fetchProductDetailsIfNeeded())
+    async (data: { id: string; price: number }) => {
+      await dispatch(addItemToCart(data))
+      await dispatch(fetchCartDetailsIfNeeded())
     },
     [dispatch]
   )

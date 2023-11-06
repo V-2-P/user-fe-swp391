@@ -32,9 +32,6 @@ export const accountSlice = createSlice({
   initialState,
   reducers: {
     logout: () => {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]')
-      localStorage.clear()
-      localStorage.setItem('cart', JSON.stringify(cart))
       return initialState
     },
     setAccessToken: (state, action: PayloadAction<string>) => {

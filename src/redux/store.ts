@@ -8,7 +8,7 @@ import storage from 'redux-persist/lib/storage'
 import { PersistConfig, persistReducer, persistStore } from 'redux-persist'
 import thunk from 'redux-thunk'
 
-import { AppReducer, AccountReducer, CartReducer, productApi, CompareReducer } from './slices'
+import { AppReducer, AccountReducer, CartReducer, CompareReducer } from './slices'
 
 const debounceNotify = debounce((notify: any) => notify())
 
@@ -22,16 +22,14 @@ const reducers = combineReducers({
   app: AppReducer,
   account: AccountReducer,
   cart: CartReducer,
-  compare: CompareReducer,
-  [productApi.reducerPath]: productApi.reducer
+  compare: CompareReducer
 })
 
 const rootReducer = persistReducer(persistConfig, reducers)
 
 export const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(thunk).concat(logger).concat(productApi.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk).concat(logger),
   devTools: process.env.NODE_ENV !== 'production',
   enhancers: [batchedSubscribe(debounceNotify)]
 })

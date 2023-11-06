@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Bird } from '../api/productApi'
+import { Bird, fetchCompareDetailsIfNeeded } from '../api/productApi'
 
 export interface CompareItem {
   id: string
@@ -31,6 +31,18 @@ export const compareSlice = createSlice({
     clearCompare(state) {
       state.items = {}
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchCompareDetailsIfNeeded.fulfilled, (state, action: PayloadAction<Bird[]>) => {
+      action.payload.forEach((bird: Bird) => {
+        // Assuming that the bird id is a string or you can convert it to string if needed
+        const id = bird.id
+        const compareItem = state.items[id]
+        if (compareItem) {
+          compareItem.detail = bird
+        }
+      })
+    })
   }
 })
 
