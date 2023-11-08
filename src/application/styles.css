@@ -10,3 +10,6 @@
 .customside > .ant-layout-sider-children {
   height: fit-content !important;
 }
+.show-mask > .ant-image .ant-image-mask {
+  opacity: 1 !important
+}

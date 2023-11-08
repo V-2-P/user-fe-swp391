@@ -17,7 +17,7 @@ import { VerifyPage } from '../pages/Verify'
 import { ComparePage } from '../pages/Compare'
 import CompareLayout from '../layouts/compareLayout'
 import { Order } from '../pages/Order'
-import { Pairing } from '../pages/Pairing'
+import Pairing from '../pages/Pairing'
 import PublicRoute from '../components/shared/PublicRoute'
 import PrivateRoute from '../components/shared/PrivateRoute'
 import ShoppingLayout from '../layouts/shoppingLayout'
@@ -48,20 +48,19 @@ const Router: React.FC = () => {
                 <Route path='/verify' element={<VerifyPage />} />
               </Route>
 
-              <Route path='/' element={<Landing />} />
               <Route element={<CompareLayout />}>
                 <Route path='/productdetail/:id' element={<ProductDetail />} />
 
                 <Route path='/shoppingcart' element={<ShoppingCart />} />
               </Route>
-              <Route path='/compare' element={<ComparePage />} />
-
               <Route element={<PrivateRoute />}>
                 <Route path='/order' element={<Order />} />
                 <Route path='/checkout' element={<Checkout />} />
                 <Route path='/userprofile' element={<Profile />} />
               </Route>
 
+              <Route path='/' element={<Landing />} />
+              <Route path='/compare' element={<ComparePage />} />
               <Route path='/pairing' element={<Pairing />} />
             </Route>
 

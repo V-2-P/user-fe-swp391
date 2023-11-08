@@ -11,7 +11,7 @@ const ShoppingLayout: React.FC = () => {
       <Header />
       <Layout style={{ minHeight: 'calc(100vh - 70px)' }}>
         <Sider
-          className='!bg-gray-300  customside'
+          className='!bg-gray-300 customside select-none !hidden lg:!block hide-scrollbar'
           width={250}
           style={{
             overflow: 'auto',
@@ -24,7 +24,7 @@ const ShoppingLayout: React.FC = () => {
         >
           <Search />
         </Sider>
-        <Layout style={{ marginLeft: 250 }}>
+        <Layout className='lg:!ml-[250px]'>
           <Content style={{ overflow: 'initial', background: '#bdd4cd', padding: 36 }}>
             <Outlet />
           </Content>
