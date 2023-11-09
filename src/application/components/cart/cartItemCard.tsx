@@ -55,7 +55,7 @@ const CartItemCard: React.FC<CartItemProps> = ({ item }) => {
         <Button icon={<ArrowRightOutlined />} onClick={increase} />
       </div>
       <div className='w-[15%]'>
-        <p>{item.price * item.quantity}</p>
+        <p>{formatCurrencyVND(item.price * item.quantity)}</p>
       </div>
       <div className='w-[10%]'>
         <Button type='link' onClick={remove}>

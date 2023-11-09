@@ -1,9 +1,14 @@
 import React, { useMemo, useState } from 'react'
-import { List, Select, Row, Col, Flex, Input, Typography } from 'antd'
-import PairingItem from './pairingItem'
+import { Select, Row, Col, Flex, Skeleton, Result, App } from 'antd'
 import useFetchData from '~/application/hooks/useFetchData'
+import SearchBird from './search'
+import { useNavigate } from 'react-router-dom'
+import { usePairing } from '~/application/hooks/usePairing'
 
-const { Title } = Typography
+type BirdImage = {
+  id: number
+  imageUrl: string
+}
 
 type Bird = {
   createdAt: string
@@ -28,14 +33,16 @@ type Bird = {
   gender: string
   color: string
   quantity: number
-  birdImages: string[] // Đây là một mảng các hình ảnh của chim
+  birdImages: BirdImage[] // Đây là một mảng các hình ảnh của chim
 }
 
 const Pairing: React.FC = () => {
+  const { pairing } = usePairing()
   const [birdTypeId, setBirdTypeId] = useState('')
+  const { notification } = App.useApp()
   const [birdTypeLoading, birdTypeError, birdTypeResponse] = useFetchData('/birdtype')
   const [birdLoading, birdError, birdResponse] = useFetchData('/birds/all')
-
+  const navigate = useNavigate()
   const birdtypes = useMemo(
     () =>
       !birdTypeLoading && !birdTypeError && birdTypeResponse
@@ -59,94 +66,71 @@ const Pairing: React.FC = () => {
   const maleBird = useMemo(() => birdMemorized.filter((bird: any) => bird.gender === 'Trống'), [birdMemorized])
   const femaleBird = useMemo(() => birdMemorized.filter((bird: any) => bird.gender === 'Mái'), [birdMemorized])
 
+  const motherBird = useMemo(() => {
+    return pairing.mother
+  }, [pairing.mother])
+  const fatherBird = useMemo(() => {
+    return pairing.father
+  }, [pairing.father])
+
   const handleChangeBirdType = (value: string[]) => {
     setBirdTypeId(value.toString())
+  }
+  const handleSubmit = () => {
+    if (motherBird && fatherBird) {
+      navigate('/pairingcheckout')
+    } else {
+      notification.error({ message: 'Vui lòng chọn chim cha hoặc chim mẹ' })
+    }
   }
 
   return (
     <div className='w-full p-10'>
-      <Row className='bg-green-200 p-10' gutter={[16, 16]}>
-        <Col span={24}>
-          <Flex justify={'center'} align={'center'} className='w-full' gap={'large'}>
-            <p className='font-bold text-lg'>Loại chim</p>
-            <Select
-              placeholder='Chọn loài chim'
-              className='w-1/6'
-              onChange={handleChangeBirdType}
-              options={birdtypes}
-            />
-          </Flex>
-        </Col>
-
-        <Col span={10}>
-          <Row gutter={[16, 16]}>
-            <Col span={10}>
-              <Title level={5}>Chim Trống</Title>
-            </Col>
-            <Col span={14}>
-              <Input.Search placeholder='Chim Trống' className='w-full' />
-            </Col>
+      <Skeleton loading={birdTypeLoading || birdLoading} active>
+        {birdTypeError || birdError ? (
+          <Result title='Failed to fetch' subTitle={birdTypeError || birdError} status='error' />
+        ) : (
+          <Row className='bg-green-200 p-10' gutter={[16, 16]}>
             <Col span={24}>
-              <List
-                grid={{ gutter: 16, column: 1 }}
-                dataSource={maleBird}
-                pagination={{
-                  onChange: (page) => {
-                    console.log(page)
-                  },
-                  pageSize: 2
-                }}
-                renderItem={(item) => (
-                  <List.Item className='!p-0'>
-                    <PairingItem bird={item} />
-                  </List.Item>
-                )}
-              />
+              <Flex justify={'center'} align={'center'} className='w-full' gap={'large'}>
+                <p className='font-bold text-lg'>Loại chim</p>
+                <Select
+                  placeholder='Chọn loài chim'
+                  className='w-1/6'
+                  onChange={handleChangeBirdType}
+                  options={birdtypes}
+                />
+              </Flex>
+            </Col>
+
+            <Col span={10}>
+              <Row gutter={[16, 16]}>
+                <SearchBird birds={maleBird} name='Chim Trống' type='male' />
+              </Row>
+            </Col>
+
+            <Col span={4}>
+              <Flex justify={'center'} align={'center'} className='w-full h-full'>
+                <img
+                  src='/heart.svg'
+                  loading='eager'
+                  className='cursor-pointer transition-transform duration-200 ease-in-out transform hover:scale-110'
+                  style={{
+                    filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))'
+                  }}
+                  onClick={handleSubmit}
+                />
+              </Flex>
+            </Col>
+
+            <Col span={10}>
+              <Row gutter={[16, 16]}>
+                <SearchBird birds={femaleBird} name='Chim Mái' type='female' />
+              </Row>
             </Col>
           </Row>
-        </Col>
-
-        <Col span={4}>
-          <Flex justify={'center'} align={'center'} className='w-full h-full'>
-            <img
-              src='/heart.svg'
-              loading='eager'
-              className='cursor-pointer transition-transform duration-200 ease-in-out transform hover:scale-110'
-              style={{
-                filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))'
-              }}
-            />
-          </Flex>
-        </Col>
-
-        <Col span={10}>
-          <Row gutter={[16, 16]}>
-            <Col span={10}>
-              <Title level={5}>Chim Mái</Title>
-            </Col>
-            <Col span={14}>
-              <Input.Search placeholder='Chim Mái' className='w-full' />
-            </Col>
-            <Col span={24}>
-              <List
-                grid={{ gutter: 16, column: 1 }}
-                dataSource={femaleBird}
-                pagination={{
-                  onChange: (page) => {
-                    console.log(page)
-                  },
-                  pageSize: 2
-                }}
-                renderItem={(item) => (
-                  <List.Item className='!p-0'>
-                    <PairingItem bird={item} />
-                  </List.Item>
-                )}
-              />
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+        )}
+      </Skeleton>
     </div>
   )
 }

@@ -57,7 +57,7 @@ const LoginPage: React.FC = () => {
           </Form.Item>
 
           <div>
-            <Link to={'/'}>Quên tài khoản/mật khẩu</Link>
+            <Link to={'/forgotpassword'}>Quên tài khoản/mật khẩu</Link>
           </div>
 
           <Form.Item wrapperCol={{ span: 100 }}>

@@ -9,8 +9,9 @@ import { getBirdImage } from '~/utils/imageUtils'
 import { Bird } from '~/redux/slices'
 import axiosClient from '~/utils/api/AxiosClient'
 import { useCart } from '~/application/hooks/useCart'
+import React from 'react'
 
-export const ComparePage = () => {
+const ComparePage: React.FC = () => {
   const { compare, addProductToCompare, removeProductFromCompare } = useCompare()
   const { addToCart } = useCart()
   const { notification } = App.useApp()
@@ -250,3 +251,4 @@ export const ComparePage = () => {
     </div>
   )
 }
+export default ComparePage

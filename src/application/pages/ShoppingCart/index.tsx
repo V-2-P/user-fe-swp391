@@ -22,7 +22,7 @@ const responsive = {
   }
 }
 
-export const ShoppingCart: React.FC = () => {
+const ShoppingCart: React.FC = () => {
   const { cart, clearCart } = useCart()
   const navigate = useNavigate()
   const dispath = useAppDispatch()
@@ -137,3 +137,4 @@ export const ShoppingCart: React.FC = () => {
     </div>
   )
 }
+export default ShoppingCart

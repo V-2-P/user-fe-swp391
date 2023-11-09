@@ -15,6 +15,8 @@ const Search: React.FC = () => {
   const keyword = searchParams.get('keyword')
   const category_id = searchParams.get('category_id')
   const type_id = searchParams.get('type_id')
+  const minPrice = searchParams.get('minPrice')
+  const maxPrice = searchParams.get('maxPrice')
 
   const [form] = Form.useForm()
   const [loadingCategory, errorCategory, responseCategory] = useFetchData(`/category`)
@@ -51,6 +53,12 @@ const Search: React.FC = () => {
       }
       if (category_id) {
         query += `&category_id=${category_id}`
+      }
+      if (minPrice) {
+        query += `&minPrice=${minPrice}`
+      }
+      if (maxPrice) {
+        query += `&minPrice=${maxPrice}`
       }
       setSearchParams(query)
     }, 1000),
@@ -89,6 +97,12 @@ const Search: React.FC = () => {
     if (category_id) {
       query += `&category_id=${category_id}`
     }
+    if (minPrice) {
+      query += `&minPrice=${minPrice}`
+    }
+    if (maxPrice) {
+      query += `&minPrice=${maxPrice}`
+    }
     setSearchParams(query)
   }
   const onFinish = (values: any) => {
@@ -106,15 +120,34 @@ const Search: React.FC = () => {
       query += `&category_id=${values.category}`
       flag = true
     }
+    if (values.minPrice !== undefined) {
+      query += `&minPrice=${values.minPrice}`
+      flag = true
+    }
+    if (values.maxPrice !== undefined) {
+      query += `&maxPrice=${values.maxPrice}`
+      flag = true
+    }
     if (!flag) {
       query = `page=${page}&limit=${limit}`
     }
-
     setSearchParams(query)
   }
+
+  const handleMinValue = (value: number | null) => {
+    if (value) {
+      console.log(value)
+    }
+  }
+  const handleMaxValue = (value: number | null) => {
+    if (value) {
+      console.log(value)
+    }
+  }
+
   const onReset = () => {
     let query = `page=1&limit=${limit}`
-    if (!keyword && !type_id && !category_id) {
+    if (!keyword && !type_id && !category_id && !minPrice && !maxPrice) {
       console.log(page)
       query = `page=${page}&limit=${limit}`
       console.log(query)
@@ -172,11 +205,11 @@ const Search: React.FC = () => {
       children: (
         <>
           <Flex wrap='wrap' justify='space-between' gap='small'>
-            <Form.Item name='minValue' label='Min'>
-              <InputNumber placeholder='min' />
+            <Form.Item name='minPrice' label='Min'>
+              <InputNumber placeholder='min' onChange={handleMinValue} />
             </Form.Item>
-            <Form.Item name='maxValue' label='Max'>
-              <InputNumber placeholder='max' />
+            <Form.Item name='maxPrice' label='Max'>
+              <InputNumber placeholder='max' onChange={handleMaxValue} />
             </Form.Item>
           </Flex>
           <Form.Item>

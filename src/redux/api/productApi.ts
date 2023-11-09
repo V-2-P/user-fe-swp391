@@ -49,3 +49,10 @@ export const fetchCompareDetailsIfNeeded = createAsyncThunk('compare/fetchDetail
   const response = await axiosClient.get(`/birds/by-ids?ids=${ids}`)
   return response.data
 })
+export const fetchPairingDetailsIfNeeded = createAsyncThunk('pairing/fetchDetails', async (_, { getState }) => {
+  const state = getState() as RootState
+
+  const ids = [state.pairing.father?.id, state.pairing.mother?.id].filter(Boolean).join(',')
+  const response = await axiosClient.get(`/birds/by-ids?ids=${ids}`)
+  return response.data
+})

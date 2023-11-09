@@ -2,8 +2,8 @@ import { Skeleton } from 'antd'
 import { Link, useSearchParams } from 'react-router-dom'
 import useFetchData from '~/application/hooks/useFetchData'
 import { Result } from 'antd'
-
-export const VerifyPage = () => {
+import React from 'react'
+const VerifyPage: React.FC = () => {
   const [searchParams] = useSearchParams()
   const userId = searchParams.get('userId')
   const token = searchParams.get('token')
@@ -17,7 +17,7 @@ export const VerifyPage = () => {
         ) : (
           <Result
             status='success'
-            title={'Successed to Fetch'}
+            title={'Xác thực thành công'}
             subTitle={<p>{response?.message}</p>}
             extra={[<Link to='/productlist'>Đi đến cửa hàng</Link>]}
           />
@@ -26,3 +26,5 @@ export const VerifyPage = () => {
     </div>
   )
 }
+
+export default VerifyPage

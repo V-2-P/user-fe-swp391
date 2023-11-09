@@ -1,4 +1,22 @@
-export { default as Home } from './Home'
-export { default as NotFound } from './NotFound'
-export { default as Error } from './Error'
-export { default as Landing } from './Landing'
+import React from 'react'
+
+export const Home = React.lazy(() => import('./Home'))
+export const NotFound = React.lazy(() => import('./NotFound'))
+export const Error = React.lazy(() => import('./Error'))
+export const Landing = React.lazy(() => import('./Landing'))
+export const Login = React.lazy(() => import('./Login'))
+export const Register = React.lazy(() => import('./Register'))
+export const Profile = React.lazy(() => import('./UserProfile'))
+export const ProductDetail = React.lazy(() => import('./ProductDetail'))
+export const ShoppingCart = React.lazy(() => import('./ShoppingCart'))
+export const ProductList = React.lazy(() => import('./ProductList'))
+export const ViewAllBird = React.lazy(() => import('./ProductList/allBird'))
+export const Checkout = React.lazy(() => import('./Checkout'))
+export const VerifyPage = React.lazy(() => import('./Verify'))
+export const ComparePage = React.lazy(() => import('./Compare'))
+export const OrderPage = React.lazy(() => import('./Order'))
+export const Pairing = React.lazy(() => import('./Pairing'))
+export const PairingCheckout = React.lazy(() => import('./Pairing/checkout'))
+export const ForgotPassword = React.lazy(() => import('./ForgotPassword'))
+export const ChangePassword = React.lazy(() => import('./ForgotPassword/changePassword'))
+export const OrderDetail = React.lazy(() => import('./Order/orderDetail'))

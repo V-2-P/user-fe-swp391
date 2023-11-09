@@ -1,23 +1,29 @@
 import React, { ReactNode, Suspense, useLayoutEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
-import { Landing, NotFound } from '~/application/pages'
+import {
+  Landing,
+  NotFound,
+  Login,
+  Profile,
+  ProductDetail,
+  Register,
+  ShoppingCart,
+  ViewAllBird,
+  Checkout,
+  VerifyPage,
+  ComparePage,
+  OrderPage,
+  ProductList,
+  Pairing,
+  PairingCheckout,
+  ForgotPassword,
+  ChangePassword,
+  OrderDetail
+} from '~/application/pages'
 import Loading from '../components/shared/Loading'
 import ErrorBoundary from './errorBoundary'
-import ProductDetail from '../pages/ProductDetail'
-import Profile from '../pages/UserProfile'
-import Login from '../pages/Login'
-import Register from '../pages/Register'
-import { ShoppingCart } from '../pages/ShoppingCart'
-
-import ProductList from '../pages/ProductList'
 import CommonLayout from '../layouts/common'
-import ViewAllBird from '../pages/ProductList/allBird'
-import Checkout from '../pages/Checkout'
-import { VerifyPage } from '../pages/Verify'
-import { ComparePage } from '../pages/Compare'
 import CompareLayout from '../layouts/compareLayout'
-import { Order } from '../pages/Order'
-import Pairing from '../pages/Pairing'
 import PublicRoute from '../components/shared/PublicRoute'
 import PrivateRoute from '../components/shared/PrivateRoute'
 import ShoppingLayout from '../layouts/shoppingLayout'
@@ -46,6 +52,8 @@ const Router: React.FC = () => {
                 <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Register />} />
                 <Route path='/verify' element={<VerifyPage />} />
+                <Route path='/forgotpassword' element={<ForgotPassword />} />
+                <Route path='/changePassword' element={<ChangePassword />} />
               </Route>
 
               <Route element={<CompareLayout />}>
@@ -54,9 +62,12 @@ const Router: React.FC = () => {
                 <Route path='/shoppingcart' element={<ShoppingCart />} />
               </Route>
               <Route element={<PrivateRoute />}>
-                <Route path='/order' element={<Order />} />
+                <Route path='/order' element={<OrderPage />} />
+                <Route path='/orderdetail/:id' element={<OrderDetail />} />
                 <Route path='/checkout' element={<Checkout />} />
                 <Route path='/userprofile' element={<Profile />} />
+
+                <Route path='/pairingcheckout' element={<PairingCheckout />} />
               </Route>
 
               <Route path='/' element={<Landing />} />

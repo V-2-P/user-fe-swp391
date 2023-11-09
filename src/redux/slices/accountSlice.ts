@@ -36,6 +36,9 @@ export const accountSlice = createSlice({
     },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload
+    },
+    setImageUrl: (state, action: PayloadAction<string>) => {
+      state.imageUrl = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -63,6 +66,6 @@ export const accountSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { logout, setAccessToken } = accountSlice.actions
+export const { logout, setAccessToken, setImageUrl } = accountSlice.actions
 
 export const AccountReducer = accountSlice.reducer

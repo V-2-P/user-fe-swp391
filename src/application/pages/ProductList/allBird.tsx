@@ -50,10 +50,14 @@ const ViewAllBird: React.FC = () => {
   const keyword = searchParams.get('keyword')
   const category_id = searchParams.get('category_id')
   const type_id = searchParams.get('type_id')
+  const minPrice = searchParams.get('minPrice')
+  const maxPrice = searchParams.get('maxPrice')
   const [loading, error, response] = useFetchData(
     `/birds?page=${page - 1}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}${
       category_id ? `&category_id=${category_id}` : ''
-    }${type_id ? `&type_id=${type_id}` : ''}`
+    }${type_id ? `&type_id=${type_id}` : ''}
+    ${minPrice ? `&minPrice=${minPrice}` : ''}
+    ${maxPrice ? `&maxPrice=${maxPrice}` : ''}`
   )
   const [data, setData] = useState<Bird[]>([])
   const totalPages = response ? response.data.totalPages : 0
@@ -87,7 +91,9 @@ const ViewAllBird: React.FC = () => {
     setSearchParams(
       `page=${page}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}${
         category_id ? `&category_id=${category_id}` : ''
-      }${type_id ? `&type_id=${type_id}` : ''}`
+      }${type_id ? `&type_id=${type_id}` : ''}
+      ${minPrice ? `&minPrice=${minPrice}` : ''}
+    ${maxPrice ? `&maxPrice=${maxPrice}` : ''}`
     )
   }
   useEffect(() => {

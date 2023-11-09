@@ -1,11 +1,31 @@
-import { UserOutlined } from '@ant-design/icons'
-import { Avatar, Button, DatePicker, Form, Input, Modal, Space, notification } from 'antd'
+import { EditOutlined, UserOutlined } from '@ant-design/icons'
+import {
+  Avatar,
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  Modal,
+  Space,
+  Tooltip,
+  Upload,
+  UploadFile,
+  UploadProps,
+  message,
+  notification
+} from 'antd'
+import ImgCrop from 'antd-img-crop'
+import { UploadChangeParam, RcFile } from 'antd/es/upload'
 import dayjs, { Dayjs } from 'dayjs'
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useAuth } from '~/application/hooks/useAuth'
 import useFetchData from '~/application/hooks/useFetchData'
 import { reFetchData } from '~/redux/slices'
 import axiosClient from '~/utils/api/AxiosClient'
+import { convertToFormData } from '~/utils/formDataUtils'
+import { getBase64, getUserImage } from '~/utils/imageUtils'
+
 interface RoleEntity {
   id: number
   name: string
@@ -26,10 +46,8 @@ interface User {
   isActive: number
 }
 const Profile: React.FC = () => {
-  const [file, setFile] = useState<any | null>(null)
-  function handleChange(e: any) {
-    setFile(URL.createObjectURL(e.target.files[0]))
-  }
+  const { changeImage } = useAuth()
+  const [imageUrl, setImageUrl] = useState<string>('error')
   const [isModalPasswordOpen, setIsModalPasswordOpen] = useState(false)
   const [loadingUser, errorUser, responseUser] = useFetchData(`user/me`)
   const [user, setUser] = useState<User>(responseUser?.data)
@@ -49,7 +67,48 @@ const Profile: React.FC = () => {
   const handleCancel = () => {
     setIsModalPasswordOpen(false)
   }
-
+  const onChangeAvatar: UploadProps['onChange'] = (info: UploadChangeParam<UploadFile>) => {
+    console.log(info)
+    getBase64(info.file.originFileObj as RcFile, (url) => {
+      setImageUrl(url)
+    })
+  }
+  const props: UploadProps = {
+    showUploadList: false,
+    onChange: onChangeAvatar,
+    customRequest: async (options: any) => {
+      try {
+        const data = {
+          imageFile: options.file
+        }
+        const response = await axiosClient.post('/user/uploadavatar', convertToFormData(data), {
+          headers: {
+            'content-type': 'multipart/form-data'
+          }
+        })
+        if (response) {
+          notification.success({ message: 'Cập nhật thành công' })
+          changeImage(response.data.imageUrl)
+          dispatch(reFetchData())
+        } else {
+          notification.error({ message: 'Cập nhật thất bại' })
+        }
+      } catch (err) {
+        notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+      }
+    },
+    beforeUpload: (file: RcFile) => {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+      if (!isJpgOrPng) {
+        message.error('You can only upload JPG/PNG file!')
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isLt2M) {
+        message.error('Image must smaller than 2MB!')
+      }
+      return isJpgOrPng && isLt2M
+    }
+  }
   useEffect(() => {
     if (!loadingUser && !errorUser && responseUser) {
       setUser(responseUser?.data)
@@ -60,6 +119,7 @@ const Profile: React.FC = () => {
         address: responseUser.data.address,
         dob: dayjs(responseUser.data.dob)
       })
+      setImageUrl(getUserImage(responseUser.data.imageUrl))
     }
   }, [loadingUser, errorUser, responseUser, form])
 
@@ -134,7 +194,7 @@ const Profile: React.FC = () => {
           <div>
             <Space direction='vertical' size={16}>
               <Space wrap size={16}>
-                <Avatar src={user?.imageUrl} size='large' icon={<UserOutlined />} />
+                <Avatar src={getUserImage(user?.imageUrl)} size='large' icon={<UserOutlined />} />
                 <p>{user?.fullName}</p>
               </Space>
             </Space>
@@ -176,8 +236,36 @@ const Profile: React.FC = () => {
         <div className='flex items-center'>
           <Space direction='vertical' size={64}>
             <Space className='flex !flex-col' wrap size={32}>
-              <Avatar src={file} size={128} icon={<UserOutlined />} />
-              <input type='file' onChange={handleChange} />
+              <div className='relative'>
+                <Avatar size={100} src={imageUrl} icon={<UserOutlined />} crossOrigin='anonymous' alt='user-image' />
+                {/* user avatar change */}
+                <div style={{ position: 'absolute', marginTop: '-6rem', marginLeft: '5rem' }}>
+                  <ImgCrop
+                    showGrid
+                    cropShape='round'
+                    rotationSlider
+                    beforeCrop={(file: RcFile) => {
+                      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+                      if (!isJpgOrPng) {
+                        message.error('You can only upload JPG/PNG file!')
+                      }
+                      const isLt2M = file.size / 1024 / 1024 < 2
+                      if (!isLt2M) {
+                        message.error('Image must smaller than 2MB!')
+                      }
+
+                      return isJpgOrPng && isLt2M
+                    }}
+                  >
+                    <Upload {...props}>
+                      <Tooltip title='Click to change Avatar'>
+                        <Button icon={<EditOutlined />} type='default' shape='circle' />
+                      </Tooltip>
+                    </Upload>
+                  </ImgCrop>
+                </div>
+              </div>
+
               <Button className='mb-2' onClick={showModalPassword}>
                 Đổi mật khẩu
               </Button>
