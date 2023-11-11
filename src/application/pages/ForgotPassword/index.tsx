@@ -12,7 +12,7 @@ const ForgotPasswordPage: React.FC = () => {
   const onFinish = (values: any) => {
     setLoading(true)
     axiosClient
-      .put(`/auth/forgotpassword?email=${values.email}`)
+      .get(`/auth/forgotpassword?email=${values.email}`)
       .then((response) => {
         setLoading(false)
         if (response) {
