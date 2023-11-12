@@ -3,7 +3,6 @@ import useFetchData from '~/application/hooks/useFetchData'
 import { formatCurrencyVND } from '~/utils/numberUtils'
 import type { TabsProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import { FeedbackOrder } from '~/application/components/Feedback/feedbackOrder'
 import React, { useMemo } from 'react'
 import { getBirdImage } from '~/utils/imageUtils'
 import { getStatusVN } from '~/utils/statusUtils'
@@ -57,15 +56,14 @@ const OrderPage: React.FC = () => {
       key: '1',
       label: 'Tất cả',
       children: orders.map((order) => (
-        <Card hoverable onClick={() => changeToDetail(order.id)} className=' px-10 py-5 h-full rounded-md '>
+        <Card hoverable onClick={() => changeToDetail(order.id)} className='!mb-5 px-10 py-5 h-full rounded-md '>
           <div className='flex font-semibold'>
             <p className='w-[25%] text-base'>Ngày đặt hàng: {order.orderDate}</p>
             <div className='w-[25%] text-base'>Mã đơn hàng: {order.id}</div>
             <div className='w-[35%]'>
-              {order.status === 'pending' ||
-                (order.status === 'processing' && (
-                  <Typography.Text type='danger'>Đơn hàng sẽ được giao trong 10 ngày</Typography.Text>
-                ))}
+              {(order.status === 'pending' || order.status === 'processing') && (
+                <Typography.Text type='danger'>Đơn hàng sẽ được giao trong 10 ngày</Typography.Text>
+              )}
             </div>
             <p className='w-[15%] flex justify-end text-base text-green-600'>{getStatusVN(order.status)}</p>
           </div>
@@ -94,9 +92,9 @@ const OrderPage: React.FC = () => {
                   <div className='flex w-full items-center'>
                     <div className='w-[70%] flex justify-center text-lg'>
                       <p className='font-bold'>
-                        Thành tiền :{' '}
+                        Giá tiền :{' '}
                         <span className='font-normal text-red-500'>
-                          {order.totalPayment ? formatCurrencyVND(order.totalPayment) : 0}
+                          {formatCurrencyVND(e.price * e.numberOfProducts)}
                         </span>
                       </p>
                     </div>
@@ -114,7 +112,7 @@ const OrderPage: React.FC = () => {
       children: orders
         ?.filter((order) => order.status === 'pending')
         .map((order) => (
-          <Card hoverable onClick={() => changeToDetail(order.id)} className='px-10 py-5 h-full rounded-md '>
+          <Card hoverable onClick={() => changeToDetail(order.id)} className='!mb-5 px-10 py-5 h-full rounded-md '>
             <div className='flex font-semibold'>
               <p className='w-[25%] text-base'>Ngày đặt hàng: {order.orderDate}</p>
               <div className='w-[25%] text-base'>Mã đơn hàng: {order.id}</div>
@@ -148,9 +146,9 @@ const OrderPage: React.FC = () => {
                     <div className='flex w-full items-center'>
                       <div className='w-[70%] flex justify-center text-lg'>
                         <p className='font-bold'>
-                          Thành tiền :{' '}
+                          Giá tiền :{' '}
                           <span className='font-normal text-red-500'>
-                            {order.totalPayment ? formatCurrencyVND(order.totalPayment) : 0}
+                            {formatCurrencyVND(e.price * e.numberOfProducts)}
                           </span>
                         </p>
                       </div>
@@ -168,7 +166,7 @@ const OrderPage: React.FC = () => {
       children: orders
         ?.filter((order) => order.status === 'processing')
         .map((order) => (
-          <Card hoverable onClick={() => changeToDetail(order.id)} className='px-10 py-5 h-full rounded-md '>
+          <Card hoverable onClick={() => changeToDetail(order.id)} className='!mb-5 px-10 py-5 h-full rounded-md '>
             <div className='flex font-semibold'>
               <p className='w-[25%] text-base'>Ngày đặt hàng: {order.orderDate}</p>
               <div className='w-[25%] text-base'>Mã đơn hàng: {order.id}</div>
@@ -202,9 +200,9 @@ const OrderPage: React.FC = () => {
                     <div className='flex w-full items-center'>
                       <div className='w-[70%] flex justify-center text-lg'>
                         <p className='font-bold'>
-                          Thành tiền :{' '}
+                          Giá tiền :{' '}
                           <span className='font-normal text-red-500'>
-                            {order.totalPayment ? formatCurrencyVND(order.totalPayment) : 0}
+                            {formatCurrencyVND(e.price * e.numberOfProducts)}
                           </span>
                         </p>
                       </div>
@@ -222,7 +220,7 @@ const OrderPage: React.FC = () => {
       children: orders
         ?.filter((order) => order.status === 'shipping')
         .map((order) => (
-          <Card hoverable onClick={() => changeToDetail(order.id)} className='px-10 py-5 h-full rounded-md '>
+          <Card hoverable onClick={() => changeToDetail(order.id)} className='!mb-5 px-10 py-5 h-full rounded-md '>
             <div className='flex font-semibold'>
               <p className='w-[25%] text-base'>Ngày đặt hàng: {order.orderDate}</p>
               <div className='w-[25%] text-base'>Mã đơn hàng: {order.id}</div>
@@ -254,9 +252,9 @@ const OrderPage: React.FC = () => {
                     <div className='flex w-full items-center'>
                       <div className='w-[70%] flex justify-center text-lg'>
                         <p className='font-bold'>
-                          Thành tiền :{' '}
+                          Giá tiền :{' '}
                           <span className='font-normal text-red-500'>
-                            {order.totalPayment ? formatCurrencyVND(order.totalPayment) : 0}
+                            {formatCurrencyVND(e.price * e.numberOfProducts)}
                           </span>
                         </p>
                       </div>
@@ -274,13 +272,11 @@ const OrderPage: React.FC = () => {
       children: orders
         ?.filter((order) => order.status === 'delivered')
         .map((order) => (
-          <Card hoverable onClick={() => changeToDetail(order.id)} className='px-10 py-5 h-full rounded-md '>
+          <Card hoverable onClick={() => changeToDetail(order.id)} className='!mb-5 px-10 py-5 h-full rounded-md '>
             <div className='flex font-semibold'>
               <p className='w-[25%] text-base'>Ngày đặt hàng: {order.orderDate}</p>
               <div className='w-[25%] text-base'>Mã đơn hàng: {order.id}</div>
-              <div className='w-[35%]'>
-                <FeedbackOrder orderId={order.id} />
-              </div>
+              <div className='w-[35%]'></div>
               <p className='w-[15%] flex justify-end text-base text-green-600'>{order.status}</p>
             </div>
             <List>
@@ -308,9 +304,9 @@ const OrderPage: React.FC = () => {
                     <div className='flex w-full items-center'>
                       <div className='w-[70%] flex justify-center text-lg'>
                         <p className='font-bold'>
-                          Thành tiền :{' '}
+                          Giá tiền :{' '}
                           <span className='font-normal text-red-500'>
-                            {order.totalPayment ? formatCurrencyVND(order.totalPayment) : 0}
+                            {formatCurrencyVND(e.price * e.numberOfProducts)}
                           </span>
                         </p>
                       </div>

@@ -1,6 +1,23 @@
 import { EnvironmentOutlined } from '@ant-design/icons'
-import { App, Button, Col, Form, Image, Input, List, Result, Row, Select, Skeleton, Tag } from 'antd'
-import { useState, useEffect, useMemo } from 'react'
+import {
+  App,
+  Button,
+  Card,
+  Col,
+  Flex,
+  Form,
+  Image,
+  Input,
+  List,
+  Result,
+  Row,
+  Select,
+  Skeleton,
+  Tag,
+  Typography,
+  Space
+} from 'antd'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '~/application/hooks/reduxHook'
 import { useCart } from '~/application/hooks/useCart'
@@ -8,9 +25,56 @@ import useFetchData from '~/application/hooks/useFetchData'
 import axiosClient from '~/utils/api/AxiosClient'
 import { getBirdImage } from '~/utils/imageUtils'
 import { formatCurrencyVND } from '~/utils/numberUtils'
+import Carousel from 'react-multi-carousel'
+import 'react-multi-carousel/lib/styles.css'
+import debounce from 'lodash/debounce'
+const responsive = {
+  desktop: {
+    breakpoint: {
+      max: 3000,
+      min: 1024
+    },
+    items: 3,
+    partialVisibilityGutter: 40
+  },
+  mobile: {
+    breakpoint: {
+      max: 464,
+      min: 0
+    },
+    items: 1,
+    partialVisibilityGutter: 30
+  },
+  tablet: {
+    breakpoint: {
+      max: 1024,
+      min: 464
+    },
+    items: 2,
+    partialVisibilityGutter: 30
+  }
+}
+
+type Voucher = {
+  createdAt: string
+  updatedAt: string
+  id: number
+  discount: number
+  name: string
+  amount: number
+  minValue: number
+  code: string
+  description: string
+  startDate: string
+  expirationDate: string
+  status: string
+}
 
 const Checkout: React.FC = () => {
   const { cart, clearCart } = useCart()
+  const [searchStatus, setSearchStatus] = useState<'' | 'error' | 'warning'>('')
+  const [voucher, setVoucher] = useState<Voucher>()
+  const [searchText, setSearchText] = useState<string>()
   const [shippindMethod, setShippingMethod] = useState<any[]>([])
   const payment = [
     { value: 'cast', label: 'Tiền mặt' },
@@ -19,6 +83,7 @@ const Checkout: React.FC = () => {
 
   const [loadingShipping, errorShipping, responseShipping] = useFetchData(`/shippingmethod`)
   const [loadingUser, errorUser, responseUser] = useFetchData(`/user/me`)
+  const [loadingVoucher, errorVoucher, responseVoucher] = useFetchData(`/voucher/customer`)
 
   const [loadingCheckout, setLoadingCheckout] = useState(false)
   const { notification } = App.useApp()
@@ -28,6 +93,13 @@ const Checkout: React.FC = () => {
 
   const shippindId = Form.useWatch('shippingMethod', form)
 
+  const vouchers: Voucher[] = useMemo(() => {
+    if (!loadingVoucher && !errorVoucher && responseVoucher) {
+      return responseVoucher.data
+    }
+    return []
+  }, [loadingVoucher, errorVoucher, responseVoucher])
+
   const shippingPrice = useMemo(() => {
     if (shippindId && shippindMethod.find((e: any) => e.id === shippindId) !== -1) {
       return shippindMethod.find((e: any) => e.id === shippindId)?.shippingMoney
@@ -36,6 +108,30 @@ const Checkout: React.FC = () => {
     }
   }, [shippindId, shippindMethod])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedSave = useCallback(
+    debounce(async (nextValue: any) => {
+      if (nextValue) {
+        const v = vouchers.find((e) => e.code === nextValue)
+        if (v) {
+          if (cart.totalPrice < v.minValue) {
+            setVoucher(undefined)
+            setSearchStatus('error')
+          } else {
+            setVoucher(v)
+            setSearchStatus('')
+          }
+        } else {
+          setVoucher(undefined)
+          setSearchStatus('error')
+        }
+      } else {
+        setVoucher(undefined)
+        setSearchStatus('')
+      }
+    }, 1000),
+    [vouchers]
+  )
   const onFinish = (values: any) => {
     setLoadingCheckout(true)
     const payload = {
@@ -46,7 +142,7 @@ const Checkout: React.FC = () => {
       shippingAddress: values.shippingAddress,
       paymentMethod: values.paymentMethod,
       shippingMethod: values.shippingMethod,
-      ...(values?.voucherId && { voucherId: values.voucherId }),
+      ...(voucher && { voucherId: voucher.id }),
       cartItems: Object.values(cart.items).map((item: any) => ({
         birdId: item.id,
         quantity: item.quantity
@@ -60,7 +156,10 @@ const Checkout: React.FC = () => {
         if (response) {
           notification.success({ message: 'Đặt hàng thành công' })
           clearCart()
-          navigate('/productlist')
+          if (response.data.paymentRespone) {
+            window.open(response.data.paymentRespone.url, '_blank')!.focus()
+          }
+          navigate(`/orderdetail/${response.data.orderId}`)
         } else {
           notification.error({ message: 'Đặt hàng thất bại' })
         }
@@ -75,6 +174,10 @@ const Checkout: React.FC = () => {
     console.log('Failed:', errorInfo)
   }
 
+  const handleSearch = (e: any) => {
+    debouncedSave(e.target.value)
+    setSearchText(e.target.value)
+  }
   useEffect(() => {
     if (!loadingUser && !errorUser && responseUser) {
       form.setFieldsValue({
@@ -171,24 +274,78 @@ const Checkout: React.FC = () => {
                   </List.Item>
                 ))}
               </List>
-              <List>
-                <List.Item className='!p-0' style={{ backgroundColor: '#c0e1dd' }}>
-                  <div className='w-[45%] border-r-2 border-dashed border-black'>
-                    <div className='flex flex-col mx-[2%] space-y-2 px-5 py-3'>
-                      <p className='text-sm font-semibold'>Ghi chú</p>
-                      <Form.Item name='note'>
-                        <Input.TextArea
-                          autoSize={{ minRows: 6 }}
-                          className='!w-full'
-                          placeholder='Lưu ý cho cửa hàng'
-                        />
-                      </Form.Item>
+
+              <div className='p-3 bg-[#c0e1dd]'>
+                <Carousel responsive={responsive}>
+                  {vouchers.map((e) => (
+                    <div className='mx-5'>
+                      <Card title={`${e.name}`} hoverable className='!h-[200px]'>
+                        <Space direction='vertical'>
+                          <Flex justify='space-between' vertical>
+                            <div>
+                              <Typography.Text>Voucher có giá trị: {formatCurrencyVND(e.discount)}</Typography.Text>
+                              <br />
+                              <Typography.Text>Voucher code: {e.code}</Typography.Text>
+                            </div>
+                            <div>
+                              <Typography.Text>
+                                Áp dụng cho đơn hàng từ{' '}
+                                <Typography.Text type='danger'>{formatCurrencyVND(e.minValue)}</Typography.Text>
+                              </Typography.Text>
+                            </div>
+                          </Flex>
+                          <Button
+                            onClick={() => {
+                              if (cart.totalPrice >= e.minValue) {
+                                debouncedSave(e.code)
+                                setSearchText(e.code)
+                              } else {
+                                notification.error({ message: 'Bạn không đủ điều kiện' })
+                              }
+                            }}
+                            type='primary'
+                          >
+                            Áp dụng ngay
+                          </Button>
+                        </Space>
+                      </Card>
                     </div>
-                  </div>
-                </List.Item>
-              </List>
+                  ))}
+                </Carousel>
+              </div>
             </div>
+
             <div className='bg-white p-3 space-y-2'>
+              <Row>
+                <Col span={16}>
+                  <p className='w-[30%] text-lg font-semibold mt-1'>Nhập voucher</p>
+                </Col>
+                <Col span={8}>
+                  <Col span={24}>
+                    <Form.Item>
+                      <Input.Search
+                        value={searchText}
+                        onChange={handleSearch}
+                        status={searchStatus}
+                        className='!w-full'
+                        placeholder='Mã code'
+                      />
+                    </Form.Item>
+                  </Col>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={16}>
+                  <p className='w-[30%] text-lg font-semibold mt-1'>Ghi Chú</p>
+                </Col>
+                <Col span={8}>
+                  <Col span={24}>
+                    <Form.Item name='note'>
+                      <Input.TextArea autoSize={{ minRows: 6 }} className='!w-full' placeholder='Lưu ý cho cửa hàng' />
+                    </Form.Item>
+                  </Col>
+                </Col>
+              </Row>
               <Row>
                 <Col span={16}>
                   <p className='w-[30%] text-lg font-semibold mt-1'>Phương thức vận chuyển</p>
@@ -246,7 +403,7 @@ const Checkout: React.FC = () => {
                   </div>
                   <div className='w-[25%] space-y-1'>
                     <p className='text-xl font-semibold text-red-500'>
-                      {formatCurrencyVND(cart.totalPrice + shippingPrice)}
+                      {formatCurrencyVND(cart.totalPrice + shippingPrice - (voucher ? voucher.discount : 0))}
                     </p>
                     <Form.Item>
                       <Button loading={loadingCheckout} type='primary' htmlType='submit'>
