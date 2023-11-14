@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, Form, Input, App } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '~/application/hooks/reduxHook'
-import { loginAsync } from '~/redux/slices'
+import { loginAsync, logout } from '~/redux/slices'
 import { LoginPayload } from '~/utils/api/auth'
 
 const LoginPage: React.FC = () => {
@@ -17,10 +17,15 @@ const LoginPage: React.FC = () => {
         email: values.email,
         password: values.password
       }
-      await dispatch(loginAsync(payload)).unwrap()
-      form.resetFields()
-      notification.success({ message: `Chào mừng bạn đến với BFS` })
-      navigate('/', { replace: true })
+      const account = await dispatch(loginAsync(payload)).unwrap()
+      if (account.role === 'ROLE_CUSTOMER') {
+        form.resetFields()
+        notification.success({ message: `Chào mừng bạn đến với BFS` })
+        navigate('/', { replace: true })
+      } else {
+        dispatch(logout())
+        notification.error({ message: `Tài khoản không hợp lệ` })
+      }
     } catch (err) {
       notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
     }
