@@ -98,7 +98,8 @@ const ViewAllBird: React.FC = () => {
   }
   useEffect(() => {
     if (!loading && !error && response) {
-      setData(response.data.birds)
+      const birdData = response.data.birds.filter((e: any) => e.name !== 'Con non')
+      setData(birdData)
     }
   }, [loading, error, response])
 

@@ -181,6 +181,20 @@ const BookingDetailPage: React.FC = () => {
     }
   ]
 
+  const checkDelivered = async (id: number, status: string) => {
+    try {
+      const response = await axiosClient.put(`booking/${id}/status?status=${status}`)
+      if (response) {
+        notification.success({ message: 'Xác nhận thành công' })
+        dispatch(reFetchData())
+      } else {
+        notification.error({ message: 'Xác nhận thất bại !' })
+      }
+    } catch (err) {
+      notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+    }
+  }
+
   const handleRepay = () => {
     setBtnPaymentLoading(true)
     axiosClient
@@ -363,6 +377,13 @@ const BookingDetailPage: React.FC = () => {
             </Space>
 
             <Divider />
+            {booking?.status === 'Shipping' ? (
+              <Button onClick={() => checkDelivered(booking.id, 'Delivered')} size='large'>
+                Đã nhận hàng
+              </Button>
+            ) : (
+              <></>
+            )}
             <Typography.Title level={3}>Chim Bố x Chim Mẹ</Typography.Title>
             <List itemLayout='horizontal'>
               <List.Item>
