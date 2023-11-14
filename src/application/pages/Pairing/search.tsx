@@ -1,5 +1,5 @@
 import { Col, Typography, Input, List } from 'antd'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import PairingItem from './pairingItem'
 import { usePairing } from '~/application/hooks/usePairing'
 
@@ -44,18 +44,29 @@ type SearchBirdProps = {
 
 const SearchBird: React.FC<SearchBirdProps> = ({ birds, name, type }) => {
   const { pairing } = usePairing()
+  const [search, setSearchText] = useState<string>('')
 
   const bird = useMemo(() => {
     if (type === 'male') return pairing.father
     else return pairing.mother
   }, [pairing.father, pairing.mother, type])
+  const listBird = useMemo(() => {
+    return birds.filter((b) => {
+      if (search) return b.name.toLowerCase().includes(search.toLowerCase())
+      return birds
+    })
+  }, [birds, search])
+  const handleChange = (e: any) => {
+    setSearchText(e.target.value)
+  }
+
   return (
     <>
       <Col span={10}>
         <Title level={5}>{name}</Title>
       </Col>
       <Col span={14}>
-        <Input.Search placeholder={name} className='w-full' />
+        <Input.Search value={search} onChange={handleChange} placeholder={name} className='w-full' />
       </Col>
       <Col span={24}>
         {bird !== null ? (
@@ -63,7 +74,7 @@ const SearchBird: React.FC<SearchBirdProps> = ({ birds, name, type }) => {
         ) : (
           <List
             grid={{ gutter: 16, column: 1 }}
-            dataSource={birds}
+            dataSource={listBird}
             pagination={{
               onChange: (page) => {
                 console.log(page)

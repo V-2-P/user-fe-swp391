@@ -1,5 +1,6 @@
 import { Button, Space, Image, Row } from 'antd'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const LandingPage: React.FC = () => {
   return (
@@ -41,9 +42,11 @@ const LandingPage: React.FC = () => {
       </Row>
       <section style={{ minHeight: 'calc(100vh - 64px)', width: '100%' }} className='text-center px-20 py-10'>
         <Space direction='vertical' size='middle' className='h-full'>
-          <Button className='!bg-[#213F36] py-[24px]' size='large' shape='round'>
-            Trải nghiệm dịch vụ
-          </Button>
+          <Link to='productlist'>
+            <Button className='!bg-[#213F36] py-[24px] !text-[#FFF]' size='large' shape='round'>
+              Trải nghiệm dịch vụ
+            </Button>
+          </Link>
           <p>Hãy sở hữu cho mình một con chim to đẹp nào</p>
 
           <p
@@ -98,14 +101,16 @@ const LandingPage: React.FC = () => {
                   những con chim cảnh phổ biến cho đến các giống chim độc đáo và hiếm có.
                 </p>
               </div>
-              <Button
-                style={{
-                  border: '1px solid #4F4F4F'
-                }}
-                className='!bg-[#213F36] !shadow-button-shadow !w-[159px] !h-[75px] lg:!absolute lg:!top-[-150px] mt-5 lg:!left-1/3'
-              >
-                Mua Ngay
-              </Button>
+              <Link to='productlist'>
+                <Button
+                  style={{
+                    border: '1px solid #4F4F4F'
+                  }}
+                  className='!bg-[#213F36] !text-[#FFF] !shadow-button-shadow !w-[159px] !h-[75px] lg:!absolute lg:!top-[-150px] mt-5 lg:!left-1/3'
+                >
+                  Mua Ngay
+                </Button>
+              </Link>
             </div>
           </div>
           <div id='intro' className='clearfix container  '>
@@ -129,15 +134,16 @@ const LandingPage: React.FC = () => {
                   chim cảnh, mang đến sự độc đáo và sự đổi mới cho thế giới chim cảnh của bạn.
                 </p>
               </div>
-
-              <Button
-                style={{
-                  border: '1px solid #4F4F4F'
-                }}
-                className='!bg-[#213F36] !shadow-button-shadow !w-[159px] !h-[75px] lg:!absolute lg:!top-[-150px] mt-5 lg:!right-1/3'
-              >
-                Chọn giống chim
-              </Button>
+              <Link to='/pairing'>
+                <Button
+                  style={{
+                    border: '1px solid #4F4F4F'
+                  }}
+                  className='!bg-[#213F36] !text-[#FFF] !shadow-button-shadow !w-[159px] !h-[75px] lg:!absolute lg:!top-[-150px] mt-5 lg:!right-1/3'
+                >
+                  Chọn giống chim
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

@@ -130,6 +130,7 @@ interface Booking {
   totalPayment: number
   bookingDetail: BookingDetail
   shippingMethod: ShippingMethod
+  trackingNumber: string
 }
 const BookingDetailPage: React.FC = () => {
   const { id } = useParams()
@@ -184,6 +185,28 @@ const BookingDetailPage: React.FC = () => {
     setBtnPaymentLoading(true)
     axiosClient
       .get(`/booking/pay-unpaid-booking?id=${id}`)
+      .then((response) => {
+        setBtnPaymentLoading(false)
+        if (response) {
+          notification.success({ message: 'Vui lòng thanh toán trả trước' })
+
+          if (response.data.url) {
+            window.open(response.data.url, '_blank')!.focus()
+          }
+          dispatch(reFetchData())
+        } else {
+          notification.error({ message: 'Thanh toán thất bại' })
+        }
+      })
+      .catch((err) => {
+        setBtnPaymentLoading(false)
+        notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+      })
+  }
+  const handlePay = () => {
+    setBtnPaymentLoading(true)
+    axiosClient
+      .get(`/booking/pay-total-booking?id=${id}`)
       .then((response) => {
         setBtnPaymentLoading(false)
         if (response) {
@@ -263,6 +286,13 @@ const BookingDetailPage: React.FC = () => {
             <div>
               {booking?.status === BookingStatus.Pending && (
                 <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
+                  <Button className='w-48' size='large' type='primary' loading={btnPaymentLoading} onClick={handlePay}>
+                    Thanh toán trả trước
+                  </Button>
+                </Flex>
+              )}
+              {booking?.status === BookingStatus.Preparing && (
+                <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
                   <Button
                     className='w-48'
                     size='large'
@@ -270,7 +300,7 @@ const BookingDetailPage: React.FC = () => {
                     loading={btnPaymentLoading}
                     onClick={handleRepay}
                   >
-                    Thanh toán trả trước
+                    Thanh toán nhận chim
                   </Button>
                 </Flex>
               )}
@@ -293,12 +323,12 @@ const BookingDetailPage: React.FC = () => {
                 <Typography.Title level={3}>Địa chỉ nhận hàng</Typography.Title>
                 <Space direction='vertical'>
                   <Typography.Text>{booking?.shippingMethod.name}</Typography.Text>
-                  {/* <Typography.Text>{booking?.trackingNumber}</Typography.Text> */}
+                  <Typography.Text>{booking?.trackingNumber}</Typography.Text>
                 </Space>
               </Flex>
               <Typography.Text strong>{booking?.fullName}</Typography.Text>
               <Typography.Text type='secondary'>{booking?.phoneNumber}</Typography.Text>
-              <Typography.Text type='secondary'>{booking?.shippingAddress}</Typography.Text>
+              <Typography.Text type='secondary'>{booking?.trackingNumber}</Typography.Text>
             </Space>
 
             <Divider />
