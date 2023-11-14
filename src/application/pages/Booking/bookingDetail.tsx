@@ -206,6 +206,24 @@ const BookingDetailPage: React.FC = () => {
   const handlePay = () => {
     setBtnPaymentLoading(true)
     axiosClient
+      .put(`/booking/${id}/status?status=Delivered`)
+      .then((response) => {
+        setBtnPaymentLoading(false)
+        if (response) {
+          dispatch(reFetchData())
+        } else {
+          notification.error({ message: 'Xác nhận thất bại' })
+        }
+      })
+      .catch((err) => {
+        setBtnPaymentLoading(false)
+        notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+      })
+  }
+
+  const handleConfirm = () => {
+    setBtnPaymentLoading(true)
+    axiosClient
       .get(`/booking/pay-total-booking?id=${id}`)
       .then((response) => {
         setBtnPaymentLoading(false)
@@ -301,6 +319,19 @@ const BookingDetailPage: React.FC = () => {
                     onClick={handleRepay}
                   >
                     Thanh toán nhận chim
+                  </Button>
+                </Flex>
+              )}
+              {booking?.status === BookingStatus.Shipping && (
+                <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
+                  <Button
+                    className='w-48'
+                    size='large'
+                    type='primary'
+                    loading={btnPaymentLoading}
+                    onClick={handleConfirm}
+                  >
+                    Xác nhận
                   </Button>
                 </Flex>
               )}
