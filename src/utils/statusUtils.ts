@@ -15,6 +15,24 @@ export const getStatusVN = (status: string) => {
     case 'cancelled':
       return 'Hủy'
       break
+    case 'Pending':
+      return 'Chờ xác nhận'
+      break
+    case 'Shipping':
+      return 'Đang vận chuyển'
+      break
+    case 'Delivered':
+      return 'Hoàn thành'
+      break
+    case 'Cancelled':
+      return 'Hủy'
+      break
+    case 'Preparing':
+      return 'Có thể nhận con'
+      break
+    case 'Confirmed':
+      return 'Xác nhận'
+      break
     default:
       return 'UNKNOWN'
       break

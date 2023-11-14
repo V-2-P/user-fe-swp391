@@ -297,7 +297,7 @@ const PairingItem: React.FC<PairingItemProps> = ({ bird, type }) => {
           </Flex>
         </Col>
         <Col span={expand ? '24' : '12'}>
-          <Title level={5}>Chim sơn ca</Title>
+          <Title level={5}>{bird?.name}</Title>
           <Paragraph
             ellipsis={
               !expand
@@ -313,8 +313,7 @@ const PairingItem: React.FC<PairingItemProps> = ({ bird, type }) => {
                 : false
             }
           >
-            Chim sơn ca là một loài chim với tiếng kêu líu lo và tươi vui. Chúng thường sống trong môi trường tự nhiên
-            và có một bộ lông màu sắc độc đáo. Tiếng kêu của chim sơn ca thường được coi là âm nhạc tự nhiên đáng yêu.
+            {bird?.description}
           </Paragraph>
           <ConfigProvider
             theme={{

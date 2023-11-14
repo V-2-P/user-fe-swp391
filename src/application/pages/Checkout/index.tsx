@@ -201,7 +201,7 @@ const Checkout: React.FC = () => {
           <Result title='Failed to fetch' subTitle={errorShipping} status='error' />
         ) : (
           <Form form={form} onFinish={onFinish} onFinishFailed={onFinishFailed} layout='vertical'>
-            <div className='bg-white p-3 space-y-2'>
+            <div className='bg-white p-3 space-y-2 rounded-lg'>
               <div className='flex'>
                 <EnvironmentOutlined />
                 <p className='ml-2'>Thông tin người dùng</p>
@@ -233,7 +233,7 @@ const Checkout: React.FC = () => {
                 </Form.Item>
               </div>
             </div>
-            <div className='bg-white'>
+            <div className='bg-white rounded-lg'>
               <List>
                 <List.Item className=' bg-opacity-30 !flex !justify-normal mb-5 rounded-md shadow-lg !font-semibold'>
                   <div className='w-[30%] mx-[2%]'>Sản phẩm</div>
@@ -274,7 +274,9 @@ const Checkout: React.FC = () => {
                   </List.Item>
                 ))}
               </List>
+            </div>
 
+            <div className='bg-white p-3 space-y-2 rounded-lg'>
               <div className='p-3 bg-[#c0e1dd]'>
                 <Carousel responsive={responsive}>
                   {vouchers.map((e) => (
@@ -313,9 +315,6 @@ const Checkout: React.FC = () => {
                   ))}
                 </Carousel>
               </div>
-            </div>
-
-            <div className='bg-white p-3 space-y-2'>
               <Row>
                 <Col span={16}>
                   <p className='w-[30%] text-lg font-semibold mt-1'>Nhập voucher</p>

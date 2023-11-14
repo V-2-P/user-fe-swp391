@@ -18,7 +18,9 @@ import {
   PairingCheckout,
   ForgotPassword,
   ChangePassword,
-  OrderDetail
+  OrderDetail,
+  Booking,
+  BookingDetail
 } from '~/application/pages'
 import Loading from '../components/shared/Loading'
 import ErrorBoundary from './errorBoundary'
@@ -63,7 +65,9 @@ const Router: React.FC = () => {
               </Route>
               <Route element={<PrivateRoute />}>
                 <Route path='/order' element={<OrderPage />} />
+                <Route path='/booking' element={<Booking />} />
                 <Route path='/orderdetail/:id' element={<OrderDetail />} />
+                <Route path='/bookingdetail/:id' element={<BookingDetail />} />
                 <Route path='/checkout' element={<Checkout />} />
                 <Route path='/userprofile' element={<Profile />} />
 

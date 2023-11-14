@@ -70,6 +70,7 @@ const OrderDetailPage: React.FC = () => {
   const [loadingButton, setLoadingButton] = useState<boolean>(false)
   const [loading, error, response] = useFetchData(`/orders/${id}`)
 
+  console.log(response)
   const [orderStep, setOrderStep] = useState<OrderStep>({
     status: 'process',
     current: 1
@@ -92,7 +93,14 @@ const OrderDetailPage: React.FC = () => {
       icon: orderStep.current === 0 && orderStep.status === 'error' ? null : <ShoppingCartOutlined />
     },
     {
-      title: orderStep.current === 1 ? 'Đang xử lý' : orderStep.current > 1 ? 'Đã xử lý' : 'Chờ xử lý',
+      title:
+        orderStep.status === 'error'
+          ? 'Đã hủy'
+          : orderStep.current === 1
+          ? 'Đang xử lý'
+          : orderStep.current > 1
+          ? 'Đã xử lý'
+          : 'Chờ xử lý',
       icon: orderStep.current === 1 && orderStep.status === 'error' ? null : <InboxOutlined />
     },
     {
@@ -202,6 +210,11 @@ const OrderDetailPage: React.FC = () => {
         setOrderStep({
           status: 'process',
           current: 3
+        })
+      } else if (status == OrderStatus.cancelled) {
+        setOrderStep({
+          status: 'error',
+          current: 1
         })
       }
     }

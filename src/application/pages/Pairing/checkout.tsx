@@ -13,8 +13,8 @@ const PairingCheckout: React.FC = () => {
   const { pairing, clearPairingList } = usePairing()
   const [shippindMethod, setShippingMethod] = useState<any[]>([])
   const payment = [
-    { value: 'cast', label: 'Tiền mặt' },
-    { value: 'vnpay', label: 'VNPay' }
+    { value: 'Cash_On_Delivery', label: 'Tiền mặt' },
+    { value: 'Debit_Or_Credit_Card', label: 'VNPay' }
   ]
 
   const [loadingShipping, errorShipping, responseShipping] = useFetchData(`/shippingmethod`)
@@ -50,23 +50,12 @@ const PairingCheckout: React.FC = () => {
       phoneNumber: values.phoneNumber,
       shippingAddress: values.shippingAddress,
       paymentMethod: values.paymentMethod,
+      shippingMethodId: values.shippingMethod,
       bookingDetailRequest: {
-        birdTypeId: 0,
-        fatherBirdId: 0,
-        motherBirdId: 0
+        birdTypeId: fatherBird?.detail?.birdType.id,
+        fatherBirdId: Number.parseInt(fatherBird!.id, 10),
+        motherBirdId: Number.parseInt(motherBird!.id, 10)
       }
-      // note: values.note,
-      // userId: userId,
-      // fullName: values.fullName,
-      // phoneNumber: values.phoneNumber,
-      // shippingAddress: values.shippingAddress,
-      // paymentMethod: values.paymentMethod,
-      // shippingMethod: values.shippingMethod,
-      // ...(values?.voucherId && { voucherId: values.voucherId }),
-      // cartItems: Object.values(cart.items).map((item: any) => ({
-      //   birdId: item.id,
-      //   quantity: item.quantity
-      // }))
     }
     console.log(payload)
     axiosClient
@@ -74,9 +63,12 @@ const PairingCheckout: React.FC = () => {
       .then((response) => {
         setLoadingCheckout(false)
         if (response) {
-          notification.success({ message: 'Đặt lai chim thành công' })
+          notification.success({ message: 'Vui lòng thanh toán trả trước' })
           clearPairingList()
-          navigate('/productlist')
+          if (response.data.paymentRespone) {
+            window.open(response.data.paymentRespone.url, '_blank')!.focus()
+          }
+          navigate(`/bookingdetail/${response.data.bookingId}`)
         } else {
           notification.error({ message: 'Đặt lai chim thất bại' })
         }
@@ -103,8 +95,7 @@ const PairingCheckout: React.FC = () => {
       form.setFieldsValue({
         fullName: responseUser?.data.fullName,
         shippingAddress: responseUser?.data.address,
-        phoneNumber: responseUser?.data.phoneNumber,
-        paymentMethod: 'vnpay'
+        phoneNumber: responseUser?.data.phoneNumber
       })
     }
   }, [loadingUser, errorUser, responseUser, form])
@@ -121,7 +112,7 @@ const PairingCheckout: React.FC = () => {
           <Result title='Failed to fetch' subTitle={errorShipping} status='error' />
         ) : (
           <Form form={form} onFinish={onFinish} onFinishFailed={onFinishFailed} layout='vertical'>
-            <div className='bg-white p-3 space-y-2'>
+            <div className='bg-white p-3 space-y-2 rounded-lg'>
               <div className='flex'>
                 <EnvironmentOutlined />
                 <p className='ml-2'>Thông tin người dùng</p>
@@ -153,8 +144,8 @@ const PairingCheckout: React.FC = () => {
                 </Form.Item>
               </div>
             </div>
-            <div className='bg-white'>
-              <Row className='bg-white p-3' gutter={[0, 16]}>
+            <div className='bg-white rounded-lg'>
+              <Row className=' p-3' gutter={[0, 16]}>
                 <Col span={24}>
                   <Typography.Title level={5}>
                     Chim Trống - {formatCurrencyVND(fatherBird!.detail!.price)}
@@ -170,7 +161,7 @@ const PairingCheckout: React.FC = () => {
               </Row>
             </div>
 
-            <div className='bg-white p-3 space-y-2'>
+            <div className='bg-white p-3 space-y-2 rounded-lg'>
               <Row>
                 <Col span={16}>
                   <p className='w-[30%] text-lg font-semibold mt-1'>Phương thức vận chuyển</p>
@@ -182,7 +173,7 @@ const PairingCheckout: React.FC = () => {
                   >
                     <Select
                       placeholder={'Vui lòng chọn phương thức vận chuyển'}
-                      options={shippindMethod.map((e: any) => ({
+                      options={shippindMethod?.map((e: any) => ({
                         value: e.id,
                         label: (
                           <span>
@@ -205,12 +196,7 @@ const PairingCheckout: React.FC = () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item name='paymentMethod' rules={[{ required: true, message: 'Chọn phương thức thanh toán' }]}>
-                    <Select
-                      placeholder={'Chọn phương thức thanh toán'}
-                      style={{ width: '100%' }}
-                      defaultValue={'vnpay'}
-                      options={payment}
-                    />
+                    <Select placeholder={'Chọn phương thức thanh toán'} style={{ width: '100%' }} options={payment} />
                   </Form.Item>
                 </Col>
               </Row>

@@ -10,3 +10,12 @@ export enum OrderStatus {
   processing = 'processing',
   shipping = 'shipping'
 }
+
+export enum BookingStatus {
+  Pending = 'Pending',
+  Delivered = 'Delivered',
+  Cancelled = 'Cancelled',
+  Preparing = 'Preparing',
+  Shipping = 'Shipping',
+  Confirmed = 'Confirmed'
+}
