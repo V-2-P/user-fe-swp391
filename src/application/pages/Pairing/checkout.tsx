@@ -217,7 +217,7 @@ const PairingCheckout: React.FC = () => {
             expectedDate: leadTimeRes.data.leadtime
           })
         } catch (err) {
-          notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+          // notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
         }
       }
       setShippingService(result)

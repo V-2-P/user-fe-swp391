@@ -224,6 +224,7 @@ const Checkout: React.FC = () => {
         }
       })
       .catch((err) => {
+        console.log(err)
         setLoadingCheckout(false)
         notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
       })
@@ -293,7 +294,7 @@ const Checkout: React.FC = () => {
             expectedDate: leadTimeRes.data.leadtime
           })
         } catch (err) {
-          notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+          // notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
         }
       }
       setShippingService(result)
