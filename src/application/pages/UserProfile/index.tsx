@@ -22,7 +22,7 @@ import { useDispatch } from 'react-redux'
 import { useAuth } from '~/application/hooks/useAuth'
 import useFetchData from '~/application/hooks/useFetchData'
 import { reFetchData } from '~/redux/slices'
-import axiosClient from '~/utils/api/AxiosClient'
+import axiosClient from '~/utils/api/axiosClient'
 import { convertToFormData } from '~/utils/formDataUtils'
 import { getBase64, getUserImage } from '~/utils/imageUtils'
 

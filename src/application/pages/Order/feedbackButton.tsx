@@ -5,7 +5,7 @@ import { getBirdImage } from '~/utils/imageUtils'
 import { formatCurrencyVND, formatCurrencyVNDToString } from '~/utils/numberUtils'
 import { useAppDispatch } from '~/application/hooks/reduxHook'
 import { reFetchData } from '~/redux/slices'
-import axiosClient from '~/utils/api/AxiosClient'
+import axiosClient from '~/utils/api/axiosClient'
 
 type OrderDetail = {
   id: number

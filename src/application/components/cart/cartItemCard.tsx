@@ -15,7 +15,13 @@ const CartItemCard: React.FC<CartItemProps> = ({ item }) => {
   const { adjustQuantity, removeFromCart } = useCart()
   const onChange = (value: number | null) => {
     if (value) {
-      adjustQuantity({ id: item.id, quantity: value })
+      if (value <= 0) {
+        adjustQuantity({ id: item.id, quantity: 1 })
+      } else if (value > item.detail!.quantity) {
+        adjustQuantity({ id: item.id, quantity: item.detail!.quantity })
+      } else {
+        adjustQuantity({ id: item.id, quantity: value })
+      }
     }
   }
   const increase = () => {
@@ -49,7 +55,7 @@ const CartItemCard: React.FC<CartItemProps> = ({ item }) => {
       <div className='ml-[10%] w-[8%]'>
         <p>{formatCurrencyVND(item.price)}</p>
       </div>
-      <div className='space-x-1 w-[15%] flex justify-center'>
+      <div className='space-x-1 w-[18%] flex justify-center'>
         <Button icon={<ArrowLeftOutlined />} onClick={decrease} />
         <InputNumber controls={false} value={item.quantity} className='!w-[25%]' onChange={onChange} />
         <Button icon={<ArrowRightOutlined />} onClick={increase} />

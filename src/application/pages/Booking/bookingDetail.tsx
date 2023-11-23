@@ -25,7 +25,7 @@ import {
   CarryOutOutlined,
   CheckCircleOutlined
 } from '@ant-design/icons'
-import axiosClient from '~/utils/api/AxiosClient'
+import axiosClient from '~/utils/api/axiosClient'
 import { getBirdImage } from '~/utils/imageUtils'
 import { BookingStatus } from '~/application/components/shared/constanst'
 import { reFetchData } from '~/redux/slices'
@@ -217,7 +217,7 @@ const BookingDetailPage: React.FC = () => {
         notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
       })
   }
-  const handlePay = () => {
+  const handleConfirm = () => {
     setBtnPaymentLoading(true)
     axiosClient
       .put(`/booking/${id}/status?status=Delivered`)
@@ -235,7 +235,7 @@ const BookingDetailPage: React.FC = () => {
       })
   }
 
-  const handleConfirm = () => {
+  const handlePay = () => {
     setBtnPaymentLoading(true)
     axiosClient
       .get(`/booking/pay-total-booking?id=${id}`)
@@ -318,13 +318,6 @@ const BookingDetailPage: React.FC = () => {
             <div>
               {booking?.status === BookingStatus.Pending && (
                 <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
-                  <Button className='w-48' size='large' type='primary' loading={btnPaymentLoading} onClick={handlePay}>
-                    Thanh toán trả trước
-                  </Button>
-                </Flex>
-              )}
-              {booking?.status === BookingStatus.Preparing && (
-                <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
                   <Button
                     className='w-48'
                     size='large'
@@ -332,6 +325,13 @@ const BookingDetailPage: React.FC = () => {
                     loading={btnPaymentLoading}
                     onClick={handleRepay}
                   >
+                    Thanh toán trả trước
+                  </Button>
+                </Flex>
+              )}
+              {booking?.status === BookingStatus.Preparing && (
+                <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
+                  <Button className='w-48' size='large' type='primary' loading={btnPaymentLoading} onClick={handlePay}>
                     Thanh toán nhận chim
                   </Button>
                 </Flex>

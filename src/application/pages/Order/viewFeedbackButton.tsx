@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import type { DescriptionsProps } from 'antd'
 import { getBirdImage } from '~/utils/imageUtils'
 import { formatCurrencyVND } from '~/utils/numberUtils'
-import axiosClient from '~/utils/api/AxiosClient'
+import axiosClient from '~/utils/api/axiosClient'
 
 interface BirdType {
   id: number

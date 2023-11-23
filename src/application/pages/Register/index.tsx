@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Button, DatePicker, Form, Input, App } from 'antd'
-import axiosClient from '~/utils/api/AxiosClient'
+import axiosClient from '~/utils/api/axiosClient'
 import { useNavigate } from 'react-router-dom'
 
 type HomeProps = object

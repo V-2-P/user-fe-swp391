@@ -1,4 +1,4 @@
-import axiosClient from '../AxiosClient'
+import axiosClient from '../axiosClient'
 import { LoginPayload } from './types'
 
 const APIs_URL = {

@@ -21,6 +21,7 @@ interface OrderDetail {
 
 interface Order {
   id: number
+  expectedDate: string
   userId: number
   fullName: string
   phoneNumber: string
@@ -58,7 +59,7 @@ const OrderPage: React.FC = () => {
             <div className='w-[25%] text-base'>Mã đơn hàng: {order.id}</div>
             <div className='w-[35%]'>
               {(order.status === 'pending' || order.status === 'processing') && (
-                <Typography.Text type='danger'>Đơn hàng sẽ được giao trong 10 ngày</Typography.Text>
+                <Typography.Text type='danger'>Thời gian giao dự kiến {order.expectedDate}</Typography.Text>
               )}
             </div>
             <p className='w-[15%] flex justify-end text-base text-green-600'>{getStatusVN(order.status)}</p>
@@ -113,7 +114,7 @@ const OrderPage: React.FC = () => {
               <p className='w-[25%] text-base'>Ngày đặt hàng: {order.orderDate}</p>
               <div className='w-[25%] text-base'>Mã đơn hàng: {order.id}</div>
               <div className='w-[35%]'>
-                <Typography.Text type='danger'>Đơn hàng sẽ được giao trong 10 ngày</Typography.Text>
+                <Typography.Text type='danger'>Thời gian giao dự kiến {order.expectedDate}</Typography.Text>
               </div>
               <p className='w-[15%] flex justify-end text-base text-green-600'>{getStatusVN(order.status)}</p>
             </div>
@@ -167,7 +168,7 @@ const OrderPage: React.FC = () => {
               <p className='w-[25%] text-base'>Ngày đặt hàng: {order.orderDate}</p>
               <div className='w-[25%] text-base'>Mã đơn hàng: {order.id}</div>
               <div className='w-[35%]'>
-                <Typography.Text type='danger'>Đơn hàng sẽ được giao trong 10 ngày</Typography.Text>
+                <Typography.Text type='danger'>Thời gian giao dự kiến {order.expectedDate}</Typography.Text>
               </div>
               <p className='w-[15%] flex justify-end text-base text-green-600'>{getStatusVN(order.status)}</p>
             </div>

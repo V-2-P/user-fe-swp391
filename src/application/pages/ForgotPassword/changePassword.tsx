@@ -2,7 +2,7 @@ import { App, Button, Form, Input } from 'antd'
 
 import React, { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import axiosClient from '~/utils/api/AxiosClient'
+import axiosClient from '~/utils/api/axiosClient'
 
 const ChangePassword: React.FC = () => {
   const [searchParams] = useSearchParams()

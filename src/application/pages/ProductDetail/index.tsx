@@ -111,7 +111,7 @@ type Bird = {
 const ProductDetail: React.FC = () => {
   const { id } = useParams()
   const { addToCart } = useCart()
-  const { addProductToCompare } = useCompare()
+  const { addProductToCompare, compare } = useCompare()
   const [current, setCurrent] = useState<number>(0)
 
   const [loading, error, response] = useFetchData(`/birds/detail/${id}`)
@@ -120,7 +120,10 @@ const ProductDetail: React.FC = () => {
   const { notification } = App.useApp()
 
   const navigate = useNavigate()
-
+  const compareItems = useMemo(
+    () => (Object.values(compare.items).length > 0 ? Object.values(compare.items) : []),
+    [compare]
+  )
   const birdData: BirdData = useMemo(() => {
     if (!loading && !error && response) {
       return response.data
@@ -177,22 +180,40 @@ const ProductDetail: React.FC = () => {
   const smallDetail: DescriptionsProps['items'] = [
     {
       key: '1',
-      children: birdData?.sold,
-      label: 'Đã mua'
+      children: `${birdData?.sold} con`,
+      label: 'Đã bán'
     },
     {
       key: '2',
       children: feedbackData.length,
       label: 'Bình luận'
+    },
+    {
+      key: '3',
+      children: `${birdData?.quantity} con`,
+      label: 'Tồn kho'
     }
   ]
-  const addToCompare = (bird: BirdData | Bird) => {
-    addProductToCompare({
-      id: bird.id.toString(),
-      name: bird.name,
-      thumbnail: bird.thumbnail
-    })
-    notification.success({ message: 'Thêm vào so sánh thành công' })
+  const addToCompare = (bird: BirdData) => {
+    if (!compareItems.find((item) => item.id === bird.id.toString())) {
+      if (compareItems.length > 0 && compareItems[0].detail?.birdType.name === bird.birdType) {
+        addProductToCompare({
+          id: bird.id.toString(),
+          name: bird.name,
+          thumbnail: bird.thumbnail
+        })
+        notification.success({ message: 'Thêm vào so sánh thành công' })
+      } else if (compareItems.length > 0 && compareItems[0].detail?.birdType.name !== bird.birdType) {
+        notification.error({ message: 'Không thể so sánh khác loài' })
+      } else {
+        addProductToCompare({
+          id: bird.id.toString(),
+          name: bird.name,
+          thumbnail: bird.thumbnail
+        })
+        notification.success({ message: 'Thêm vào so sánh thành công' })
+      }
+    }
   }
 
   const handleAddToCart = (bird: BirdData | Bird) => {
@@ -406,24 +427,6 @@ const ProductDetail: React.FC = () => {
                         <Rate value={birdData?.totalRating} allowHalf disabled />
                       </Col>
                       <Descriptions items={smallDetail} column={1} />
-                      {/* <Col span={24}>
-                        <Space>
-                          <span className='w-[fit] my-auto !text-black mr-2'>{birdData?.totalRating}</span>
-                          <p className='text-base mr-1'>Đánh giá</p>
-                        </Space>
-                      </Col>
-                      <Col span={24}>
-                        <Space>
-                          <span className='w-[fit] my-auto !text-black'>{birdData?.totalRating}</span>
-                          <p className='text-base mr-1'>Đánh giá</p>
-                        </Space>
-                      </Col>
-                      <Col span={24}>
-                        <Space>
-                          <span className='w-[fit] my-auto !text-black'>{birdData?.sold}</span>
-                          <p className='text-base mr-1'>Đã mua</p>
-                        </Space>
-                      </Col> */}
                     </Row>
 
                     <p className='w-[60%] !text-4xl text-red-500'>
@@ -494,27 +497,6 @@ const ProductDetail: React.FC = () => {
                     </List.Item>
                   )}
                 />
-                // <div>
-                //   {feedbackData.map(
-                //     (e) =>
-                //       e.active && (
-                //         <div className='flex flex-col mt-2'>
-                //           <div className='flex'>
-                //             <div className='my-auto'>
-                //               <Avatar size='large' src={getUserImage(e.userImage)} icon={<UserOutlined />} />
-                //             </div>
-                //             <div className='ml-2'>
-                //               <p className='text-sm'>{e.fullName}</p>
-                //               <Rate value={e.rating} allowHalf disabled className='w-full !text-xs' />
-                //             </div>
-                //           </div>
-                //           <div className='mt-5'>
-                //             <Typography.Text>{e.comment}</Typography.Text>
-                //           </div>
-                //         </div>
-                //       )
-                //   )}
-                // </div>
               )}
             </Skeleton>
           </Tabs.TabPane>
@@ -550,28 +532,6 @@ const ProductDetail: React.FC = () => {
                           <Typography.Text ellipsis={true}>{item.name} </Typography.Text>
                           <p className='break-words w-full text-sm text-red-500'>{formatCurrencyVND(item.price)}</p>
                         </div>
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            addToCompare(item)
-                          }}
-                          size='middle'
-                          icon={<PlusOutlined />}
-                          className=''
-                        >
-                          So sánh
-                        </Button>
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleAddToCart(item)
-                          }}
-                          size='middle'
-                          icon={<ShoppingCartOutlined />}
-                          type='primary'
-                        >
-                          Thêm giỏ hàng
-                        </Button>
                       </div>
                     </Card>
                   </div>

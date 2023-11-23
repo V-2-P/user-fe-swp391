@@ -7,7 +7,7 @@ import { ShoppingCartOutlined } from '@ant-design/icons'
 import { useCompare } from '~/application/hooks/useCompare'
 import { getBirdImage } from '~/utils/imageUtils'
 import { Bird } from '~/redux/slices'
-import axiosClient from '~/utils/api/AxiosClient'
+import axiosClient from '~/utils/api/axiosClient'
 import { useCart } from '~/application/hooks/useCart'
 import React from 'react'
 

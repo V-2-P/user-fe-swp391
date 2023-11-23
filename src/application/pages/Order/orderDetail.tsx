@@ -23,7 +23,7 @@ import { ShoppingCartOutlined, InboxOutlined, CarOutlined, CarryOutOutlined } fr
 import { OrderStatus } from '~/application/components/shared/constanst'
 import FeedbackButton from './feedbackButton'
 import { useAppDispatch } from '~/application/hooks/reduxHook'
-import axiosClient from '~/utils/api/AxiosClient'
+import axiosClient from '~/utils/api/axiosClient'
 import { reFetchData } from '~/redux/slices'
 import ViewFeedbackButton from './viewFeedbackButton'
 
@@ -170,6 +170,44 @@ const OrderDetailPage: React.FC = () => {
     }
   ]
 
+  const checkPaymentStatus = async (orderId: number): Promise<OrderStatus> => {
+    const response = await axiosClient.get(`/orders/${orderId}`)
+    return response.data.status
+  }
+  const longPollingCheckPaymentStatus = async (orderId: number) => {
+    const intervalId = setInterval(async () => {
+      try {
+        const isPaymentSuccessful = await checkPaymentStatus(orderId)
+
+        if (isPaymentSuccessful === OrderStatus.processing) {
+          clearInterval(intervalId) // Dừng long polling khi thanh toán thành công
+          notification.success({ message: 'Thanh toán thành công' })
+          dispatch(reFetchData())
+        }
+      } catch (error) {
+        // Xử lý lỗi (ví dụ: thông báo lỗi)
+        console.error('Error checking payment status:', error)
+      }
+    }, 5000) // Gọi kiểm tra mỗi 5 giây (có thể điều chỉnh thời gian giữa các lần kiểm tra)
+  }
+  const handleRepayment = async () => {
+    setLoadingButton(true)
+    try {
+      const response = await axiosClient.put(`/orders/rePayment/${order.id}`)
+      if (response) {
+        // redirect tới trang thanh toán
+        // gọi api check status
+        await longPollingCheckPaymentStatus(order.id)
+        setLoadingButton(false)
+      } else {
+        notification.error({ message: 'Sorry! Something went wrong. App server error' })
+      }
+    } catch (err) {
+      setLoadingButton(false)
+      notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+    }
+  }
+
   const handleConfirm = async () => {
     setLoadingButton(true)
     try {
@@ -246,6 +284,20 @@ const OrderDetailPage: React.FC = () => {
               items={stepItems}
             />
             <div>
+              {order?.status === OrderStatus.pending && order.paymentMethod === 'vnpay' && (
+                <Flex justify='space-between' align='center' className='border-[1px] border-dashed p-5'>
+                  <Typography.Title level={5}>Thời gian thanh toán trong 30p kể từ khi đặt hàng</Typography.Title>
+                  <Button
+                    className='w-48'
+                    size='large'
+                    type='primary'
+                    loading={loadingButton}
+                    onClick={handleRepayment}
+                  >
+                    Thanh toán ngay
+                  </Button>
+                </Flex>
+              )}
               {(order?.status === OrderStatus.shipping || order?.status === OrderStatus.delivered) && (
                 <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
                   {order?.status === OrderStatus.shipping ? (

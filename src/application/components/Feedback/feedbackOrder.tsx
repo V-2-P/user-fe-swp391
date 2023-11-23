@@ -1,7 +1,7 @@
 import { App, Button, Form, Image, Input, Modal, Rate, Skeleton } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import React, { useState } from 'react'
-import axiosClient from '~/utils/api/AxiosClient'
+import axiosClient from '~/utils/api/axiosClient'
 import { formatCurrencyVND } from '~/utils/numberUtils'
 
 interface OrderDetail {

@@ -24,10 +24,12 @@ const Search: React.FC = () => {
   const categories = useMemo(
     () =>
       !loadingCategory && !errorCategory && responseCategory
-        ? responseCategory.data.map((d: { id: number; name: string }) => ({
-            value: d.id,
-            label: d.name
-          }))
+        ? responseCategory.data
+            .filter((d: { id: number; name: string }) => d.name !== 'Chim ghép sinh sản')
+            .map((d: { id: number; name: string }) => ({
+              value: d.id,
+              label: d.name
+            }))
         : [],
     [responseCategory, loadingCategory, errorCategory]
   )
@@ -212,17 +214,6 @@ const Search: React.FC = () => {
               <InputNumber placeholder='max' onChange={handleMaxValue} />
             </Form.Item>
           </Flex>
-          <Form.Item>
-            <Button
-              htmlType='submit'
-              type='default'
-              shape='round'
-              onClick={handleSearchPrice}
-              className='!bg-green-800 !rounded-ful !w-full !text-white !shadow-[0_20px_25px_-15px_rgba(0,0,0,0.4)]'
-            >
-              Áp dụng
-            </Button>
-          </Form.Item>
         </>
       )
     }
@@ -231,6 +222,17 @@ const Search: React.FC = () => {
   return (
     <Form form={form} layout='vertical' name='advanced_search' onFinish={onFinish}>
       <Collapse defaultActiveKey={['1', '2', '3']} expandIconPosition='end' items={items} bordered={false} />
+      <Form.Item className='!px-[16px]'>
+        <Button
+          htmlType='submit'
+          type='default'
+          shape='round'
+          onClick={handleSearchPrice}
+          className='!bg-green-800 !rounded-ful !w-full !text-white !shadow-[0_20px_25px_-15px_rgba(0,0,0,0.4)]'
+        >
+          Áp dụng
+        </Button>
+      </Form.Item>
       <Form.Item className='!px-[16px]'>
         <Button
           type='default'

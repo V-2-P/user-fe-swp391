@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, List, Empty, Image, Card, Typography, Space } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 import Carousel from 'react-multi-carousel'
+import 'react-multi-carousel/lib/styles.css'
 import { formatCurrencyVND } from '~/utils/numberUtils'
 import { useCart } from '~/application/hooks/useCart'
 import CartItemCard from '~/application/components/cart/cartItemCard'
@@ -9,7 +10,7 @@ import { useAppDispatch } from '~/application/hooks/reduxHook'
 import { fetchCartDetailsIfNeeded } from '~/redux/slices'
 import { getBirdImage } from '~/utils/imageUtils'
 import useFetchData from '~/application/hooks/useFetchData'
-import axiosClient from '~/utils/api/AxiosClient'
+import axiosClient from '~/utils/api/axiosClient'
 type Bird = {
   id: number
   name: string
@@ -145,7 +146,7 @@ const ShoppingCart: React.FC = () => {
         )}
       </div>
       <div className='bg-gray-200 mt-5 p-5 rounded-xl'>
-        <Space direction='vertical' className='w-full'>
+        <Space direction='vertical' className='!w-full'>
           <Typography.Title level={3} className='ml-5'>
             Đề cử
           </Typography.Title>

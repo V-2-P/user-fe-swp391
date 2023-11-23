@@ -3,7 +3,7 @@ import { App, Button, Form, Input } from 'antd'
 import { Link } from 'react-router-dom'
 
 import React, { useState } from 'react'
-import axiosClient from '~/utils/api/AxiosClient'
+import axiosClient from '~/utils/api/axiosClient'
 
 const ForgotPasswordPage: React.FC = () => {
   const [loading, setLoading] = useState(false)
