@@ -409,6 +409,12 @@ const BookingDetailPage: React.FC = () => {
                 <Space direction='vertical'>
                   <Typography.Text>{booking?.shippingMethod}</Typography.Text>
                   <Typography.Text>{booking?.trackingNumber}</Typography.Text>
+                  <Typography.Link
+                    href={`https://tracking.ghn.dev/?order_code=${booking?.trackingNumber}`}
+                    target='_blank'
+                  >
+                    {booking?.trackingNumber}
+                  </Typography.Link>
                 </Space>
               </Flex>
               <Typography.Text strong>{booking?.fullName}</Typography.Text>

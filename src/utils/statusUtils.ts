@@ -31,7 +31,7 @@ export const getStatusVN = (status: string) => {
       return 'Có thể nhận con'
       break
     case 'Confirmed':
-      return 'Xác nhận'
+      return 'Đang lai'
       break
     default:
       return 'UNKNOWN'

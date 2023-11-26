@@ -367,7 +367,12 @@ const OrderDetailPage: React.FC = () => {
                 <Typography.Title level={3}>Địa chỉ nhận hàng</Typography.Title>
                 <Space direction='vertical'>
                   <Typography.Text>{order?.shippingMethod}</Typography.Text>
-                  <Typography.Text>{order?.trackingNumber}</Typography.Text>
+                  <Typography.Link
+                    href={`https://tracking.ghn.dev/?order_code=${order?.trackingNumber}`}
+                    target='_blank'
+                  >
+                    {order?.trackingNumber}
+                  </Typography.Link>
                 </Space>
               </Flex>
               <Typography.Text strong>{order?.fullName}</Typography.Text>
