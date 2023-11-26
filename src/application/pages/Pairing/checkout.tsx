@@ -34,9 +34,10 @@ const PairingCheckout: React.FC = () => {
   ]
   const paymentDeposit = [{ value: 'Debit_Or_Credit_Card', label: 'VNPay' }]
   const [shippingService, setShippingService] = useState<
-    { serviceTypeId: number; serviceName: string; expectedDate: number; price: number }[]
+    { serviceId: number; serviceTypeId: number; serviceName: string; expectedDate: number; price: number }[]
   >([
     {
+      serviceId: 53320,
       serviceTypeId: 2,
       serviceName: 'Chuyển phát thương mại điện tử',
       expectedDate: 1700783999,
@@ -125,8 +126,12 @@ const PairingCheckout: React.FC = () => {
       userId: userId,
       fullName: values.fullName,
       phoneNumber: values.phoneNumber,
-      shippingAddress: values.shippingAddress,
+      toAddress: values.shippingAddress,
       paymentMethod: values.paymentMethod,
+      ...(districtId && { toDistrictId: districtId }),
+      ...(wardId && { toWardCode: wardId }),
+      ...(shipService && { serviceTypeId: shipService.serviceTypeId }),
+      ...(shipService && { serviceId: shipService.serviceId }),
       ...(shipService && { shippingMethod: shipService.serviceName }),
       ...(shipService && { shippingMoney: shipService.price }),
       ...(shipService && { expectedDate: formatRequestDate(timestampToDate(shipService.expectedDate)) }),
@@ -190,7 +195,13 @@ const PairingCheckout: React.FC = () => {
 
   useEffect(() => {
     const getAllServices = async (payload: any) => {
-      const result: { serviceTypeId: number; serviceName: string; expectedDate: number; price: number }[] = []
+      const result: {
+        serviceId: number
+        serviceTypeId: number
+        serviceName: string
+        expectedDate: number
+        price: number
+      }[] = []
       const serviceRes = await axiosClient.post('/shipments/available-services', payload)
       const services: { service_id: number; service_type_id: number; short_name: string }[] = serviceRes.data
       for (const service of services) {
@@ -211,6 +222,7 @@ const PairingCheckout: React.FC = () => {
           const leadTimeRes = await axiosClient.post('/shipments/leadtime', payloadLeatime)
 
           result.push({
+            serviceId: service.service_id,
             serviceTypeId: service.service_type_id,
             serviceName: service.short_name,
             price: feeRes.data.total,

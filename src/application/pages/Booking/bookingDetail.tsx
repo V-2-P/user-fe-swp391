@@ -29,6 +29,7 @@ import axiosClient from '~/utils/api/axiosClient'
 import { getBirdImage } from '~/utils/imageUtils'
 import { BookingStatus } from '~/application/components/shared/constanst'
 import { reFetchData } from '~/redux/slices'
+import CountdownTimer from '~/application/components/shared/CountdownTimer'
 
 interface OrderStep {
   status: 'wait' | 'error' | 'process' | 'finish'
@@ -88,14 +89,6 @@ interface BookingDetail {
   birdPairing: BirdPairing[]
 }
 
-interface ShippingMethod {
-  createdAt: string
-  updatedAt: string
-  id: number
-  name: string
-  shippingMoney: number
-}
-
 interface RoleEntity {
   id: number
   name: string
@@ -129,7 +122,7 @@ interface Booking {
   paymentDeposit: number
   totalPayment: number
   bookingDetail: BookingDetail
-  shippingMethod: ShippingMethod
+  shippingMethod: string
   trackingNumber: string
 }
 const BookingDetailPage: React.FC = () => {
@@ -181,6 +174,27 @@ const BookingDetailPage: React.FC = () => {
     }
   ]
 
+  const checkPaymentStatus = async (bookingId: number): Promise<BookingStatus> => {
+    const response = await axiosClient.get(`/booking/${bookingId}`)
+    return response.data.status
+  }
+  const longPollingCheckPaymentStatus = async (bookingId: number) => {
+    const intervalId = setInterval(async () => {
+      try {
+        const isPaymentSuccessful = await checkPaymentStatus(bookingId)
+
+        if (isPaymentSuccessful === BookingStatus.Confirmed) {
+          clearInterval(intervalId) // Dừng long polling khi thanh toán thành công
+          dispatch(reFetchData())
+          setBtnPaymentLoading(false)
+        }
+      } catch (error) {
+        // Xử lý lỗi (ví dụ: thông báo lỗi)
+        console.error('Error checking payment status:', error)
+      }
+    }, 5000) // Gọi kiểm tra mỗi 5 giây (có thể điều chỉnh thời gian giữa các lần kiểm tra)
+  }
+
   const checkDelivered = async (id: number, status: string) => {
     try {
       const response = await axiosClient.put(`booking/${id}/status?status=${status}`)
@@ -195,27 +209,24 @@ const BookingDetailPage: React.FC = () => {
     }
   }
 
-  const handleRepay = () => {
+  const handleRepay = async () => {
     setBtnPaymentLoading(true)
-    axiosClient
-      .get(`/booking/pay-unpaid-booking?id=${id}`)
-      .then((response) => {
-        setBtnPaymentLoading(false)
-        if (response) {
-          notification.success({ message: 'Vui lòng thanh toán trả trước' })
-
-          if (response.data.url) {
-            window.open(response.data.url, '_blank')!.focus()
-          }
-          dispatch(reFetchData())
-        } else {
-          notification.error({ message: 'Thanh toán thất bại' })
+    try {
+      const response = await axiosClient.get(`/booking/pay-unpaid-booking?id=${id}`)
+      if (response) {
+        // redirect tới trang thanh toán
+        if (response.data) {
+          window.open(response.data.url, '_blank')!.focus()
         }
-      })
-      .catch((err) => {
-        setBtnPaymentLoading(false)
-        notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
-      })
+        // gọi api check status
+        await longPollingCheckPaymentStatus(booking.id)
+      } else {
+        notification.error({ message: 'Sorry! Something went wrong. App server error' })
+      }
+    } catch (err) {
+      setBtnPaymentLoading(false)
+      notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+    }
   }
   const handleConfirm = () => {
     setBtnPaymentLoading(true)
@@ -290,6 +301,34 @@ const BookingDetailPage: React.FC = () => {
       }
     }
   }, [loading, error, response])
+
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        if (booking) {
+          if (booking.status === BookingStatus.Pending) {
+            const isPaymentSuccessful = await checkPaymentStatus(booking.id)
+
+            if (isPaymentSuccessful === BookingStatus.Confirmed) {
+              clearInterval(intervalId) // Dừng long polling khi thanh toán thành công
+              dispatch(reFetchData())
+            }
+          } else {
+            clearInterval(intervalId)
+          }
+        } else {
+          clearInterval(intervalId)
+        }
+      } catch (error) {
+        // Xử lý lỗi (ví dụ: thông báo lỗi)
+        console.error('Error checking payment status:', error)
+      }
+    }, 5000)
+    return () => {
+      // Dừng long polling và xóa interval khi thành phần bị unmount
+      clearInterval(intervalId)
+    }
+  }, [dispatch, notification, booking])
   return (
     <div className='w-full h-full p-10  bg-gray-200'>
       <Skeleton loading={loading} active>
@@ -317,7 +356,8 @@ const BookingDetailPage: React.FC = () => {
             />
             <div>
               {booking?.status === BookingStatus.Pending && (
-                <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
+                <Flex justify='space-between' align='center' className='border-[1px] border-dashed p-5'>
+                  <CountdownTimer createdAt={booking.createdAt} />
                   <Button
                     className='w-48'
                     size='large'
@@ -367,7 +407,7 @@ const BookingDetailPage: React.FC = () => {
               <Flex justify='space-between' align='center'>
                 <Typography.Title level={3}>Địa chỉ nhận hàng</Typography.Title>
                 <Space direction='vertical'>
-                  <Typography.Text>{booking?.shippingMethod.name}</Typography.Text>
+                  <Typography.Text>{booking?.shippingMethod}</Typography.Text>
                   <Typography.Text>{booking?.trackingNumber}</Typography.Text>
                 </Space>
               </Flex>

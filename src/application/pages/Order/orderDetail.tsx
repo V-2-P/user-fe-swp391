@@ -26,6 +26,7 @@ import { useAppDispatch } from '~/application/hooks/reduxHook'
 import axiosClient from '~/utils/api/axiosClient'
 import { reFetchData } from '~/redux/slices'
 import ViewFeedbackButton from './viewFeedbackButton'
+import CountdownTimer from '~/application/components/shared/CountdownTimer'
 
 type OrderDetail = {
   id: number
@@ -56,6 +57,7 @@ type Order = {
   trackingNumber: string | null
   orderDetails: OrderDetail[]
   feedbackStatus: boolean
+  createdAt: string
 }
 
 interface OrderStep {
@@ -181,7 +183,6 @@ const OrderDetailPage: React.FC = () => {
 
         if (isPaymentSuccessful === OrderStatus.processing) {
           clearInterval(intervalId) // Dừng long polling khi thanh toán thành công
-          notification.success({ message: 'Thanh toán thành công' })
           dispatch(reFetchData())
         }
       } catch (error) {
@@ -196,6 +197,9 @@ const OrderDetailPage: React.FC = () => {
       const response = await axiosClient.put(`/orders/rePayment/${order.id}`)
       if (response) {
         // redirect tới trang thanh toán
+        if (response.data) {
+          window.open(response.data.url, '_blank')!.focus()
+        }
         // gọi api check status
         await longPollingCheckPaymentStatus(order.id)
         setLoadingButton(false)
@@ -258,6 +262,33 @@ const OrderDetailPage: React.FC = () => {
     }
   }, [loading, error, response])
 
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        if (order) {
+          if (order.status === OrderStatus.pending) {
+            const isPaymentSuccessful = await checkPaymentStatus(order.id)
+
+            if (isPaymentSuccessful === OrderStatus.processing) {
+              clearInterval(intervalId) // Dừng long polling khi thanh toán thành công
+              dispatch(reFetchData())
+            }
+          } else {
+            clearInterval(intervalId)
+          }
+        } else {
+          clearInterval(intervalId)
+        }
+      } catch (error) {
+        // Xử lý lỗi (ví dụ: thông báo lỗi)
+        console.error('Error checking payment status:', error)
+      }
+    }, 5000)
+    return () => {
+      // Dừng long polling và xóa interval khi thành phần bị unmount
+      clearInterval(intervalId)
+    }
+  }, [dispatch, notification, order])
   return (
     <div className='w-full h-full p-10  bg-gray-200'>
       <Skeleton loading={loading} active>
@@ -286,7 +317,7 @@ const OrderDetailPage: React.FC = () => {
             <div>
               {order?.status === OrderStatus.pending && order.paymentMethod === 'vnpay' && (
                 <Flex justify='space-between' align='center' className='border-[1px] border-dashed p-5'>
-                  <Typography.Title level={5}>Thời gian thanh toán trong 30p kể từ khi đặt hàng</Typography.Title>
+                  <CountdownTimer createdAt={order.createdAt} />
                   <Button
                     className='w-48'
                     size='large'
