@@ -17,8 +17,8 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ createdAt }) => {
   // Lấy thời gian hiện tại với múi giờ UTC+7
   const currentTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }))
 
-  // Tính thời gian còn lại (tính bằng mili giây) cho bộ đếm 30 phút
-  const countdownDuration = createdAtDateTime.getTime() + 30 * 60 * 1000 - currentTime.getTime()
+  // Tính thời gian còn lại (tính bằng mili giây) cho bộ đếm 1 ngày
+  const countdownDuration = createdAtDateTime.getTime() + 24 * 60 * 60 * 1000 - currentTime.getTime()
 
   // Sử dụng useState để lưu trữ thời gian còn lại
   const [countdown, setCountdown] = useState(countdownDuration)
