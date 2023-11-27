@@ -127,11 +127,11 @@ const Search: React.FC = () => {
       query += `&category_id=${values.category}`
       flag = true
     }
-    if (values.minPrice !== undefined) {
+    if (values.minPrice && values.minPrice !== undefined) {
       query += `&minPrice=${values.minPrice}`
       flag = true
     }
-    if (values.maxPrice !== undefined) {
+    if (values.maxPrice && values.maxPrice !== undefined) {
       query += `&maxPrice=${values.maxPrice}`
       flag = true
     }
