@@ -110,6 +110,7 @@ type Bird = {
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams()
+  const navigate = useNavigate()
   const { addToCart } = useCart()
   const { addProductToCompare, compare } = useCompare()
   const [current, setCurrent] = useState<number>(0)
@@ -119,7 +120,6 @@ const ProductDetail: React.FC = () => {
   const [recommendLoading, recommendError, recommendResponse] = useFetchData(`/birds/recommendlist?birdId=${id}&K=20`)
   const { notification } = App.useApp()
 
-  const navigate = useNavigate()
   const compareItems = useMemo(
     () => (Object.values(compare.items).length > 0 ? Object.values(compare.items) : []),
     [compare]
@@ -452,7 +452,15 @@ const ProductDetail: React.FC = () => {
                           Thêm giỏ hàng
                         </Button>
                         <div className='w-[2%]'></div>
-                        <Button icon={<ShoppingOutlined />} className='w-[50%] !bg-green-700 !text-white'>
+
+                        <Button
+                          icon={<ShoppingOutlined />}
+                          onClick={() => {
+                            handleAddToCart(birdData)
+                            navigate('/shoppingcart')
+                          }}
+                          className='w-[50%] !bg-green-700 !text-white'
+                        >
                           Mua ngay
                         </Button>
                       </div>
