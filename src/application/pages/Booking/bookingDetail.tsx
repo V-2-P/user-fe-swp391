@@ -30,8 +30,9 @@ import { getBirdImage } from '~/utils/imageUtils'
 import { BookingStatus } from '~/application/components/shared/constanst'
 import { reFetchData } from '~/redux/slices'
 import CountdownTimer from '~/application/components/shared/CountdownTimer'
+import { formatCurrencyVND } from '~/utils/numberUtils'
 
-interface OrderStep {
+interface BookingStep {
   status: 'wait' | 'error' | 'process' | 'finish'
   current: number
 }
@@ -123,20 +124,28 @@ interface Booking {
   totalPayment: number
   bookingDetail: BookingDetail
   shippingMethod: string
+  shippingMoney: number
   trackingNumber: string
 }
 const BookingDetailPage: React.FC = () => {
   const { id } = useParams()
   const { notification } = App.useApp()
   const dispatch = useAppDispatch()
-  // const [loadingButton, setLoadingButton] = useState<boolean>(false)
+
   const [loading, error, response] = useFetchData(`/booking/${id}`)
 
+  const [btnTakeBirdLoading, setBtnTakeBirdLoading] = useState<boolean>(false)
+  const [btnNotTakeBirdLoading, setBtnNotTakeBirdLoading] = useState<boolean>(false)
   const [btnPaymentLoading, setBtnPaymentLoading] = useState<boolean>(false)
 
-  const [orderStep, setOrderStep] = useState<OrderStep>({
+  const [bookingStep, setBookingStep] = useState<BookingStep>({
     status: 'process',
     current: 3
+  })
+
+  const [bookingDetailStep, setBookingDetailStep] = useState<BookingStep>({
+    status: 'process',
+    current: 0
   })
 
   const booking: Booking = useMemo(() => {
@@ -145,45 +154,170 @@ const BookingDetailPage: React.FC = () => {
     }
     return null
   }, [loading, error, response])
-  console.log(booking)
+
   const pairings: BirdPairing[] = useMemo(() => {
     if (booking) return booking.bookingDetail.birdPairing
     return []
   }, [booking])
 
-  const stepItems: StepProps[] = [
+  const stepItems: StepProps[] =
+    bookingStep.status !== 'error'
+      ? [
+          {
+            title: bookingStep.current > 0 ? 'Đã trả trước' : 'Chờ trả trước',
+            icon: <ShoppingCartOutlined />
+          },
+          {
+            title:
+              bookingStep.current === 1
+                ? booking?.bookingDetail.status === 'Waiting'
+                  ? 'Chờ xác nhận'
+                  : 'Đã xác nhận'
+                : bookingStep.current > 1
+                ? 'Đã xác nhận'
+                : 'Chờ xác nhận',
+            icon: <CheckCircleOutlined />
+          },
+          {
+            title:
+              bookingStep.current === 2
+                ? booking?.bookingDetail.status === 'Receiving_Confirm'
+                  ? 'Đã nhận con'
+                  : 'Đang nhận con'
+                : bookingStep.current > 2
+                ? 'Đã nhận con'
+                : 'Chờ nhận con',
+            icon: <InboxOutlined />
+          },
+          {
+            title:
+              bookingStep.current === 3
+                ? 'Đang vận chuyển'
+                : bookingStep.current > 3
+                ? 'Đã vận chuyển'
+                : 'Chờ vận chuyển',
+            icon: <CarOutlined />
+          },
+          {
+            title:
+              bookingStep.current === 4 ? 'Đang giao hàng' : bookingStep.current > 4 ? 'Đã giao hàng' : 'Chờ giao hàng',
+            icon: <CarryOutOutlined />
+          }
+        ]
+      : [
+          {
+            title: bookingStep.current > 0 ? 'Đã trả trước' : 'Chờ trả trước',
+            icon: bookingStep.current === 0 && bookingStep.status === 'error' ? null : <ShoppingCartOutlined />
+          },
+          {
+            title:
+              bookingStep.status === 'error'
+                ? 'Đã hủy'
+                : bookingStep.current === 1
+                ? booking?.bookingDetail.status === 'Waiting'
+                  ? 'Chờ xác nhận'
+                  : 'Đã xác nhận'
+                : bookingStep.current > 1
+                ? 'Đã xác nhận'
+                : 'Chờ xác nhận',
+            icon: bookingStep.current === 1 && bookingStep.status === 'error' ? null : <CheckCircleOutlined />
+          }
+        ]
+
+  const bookingDetailStepItems: StepProps[] = [
     {
-      title: orderStep.current > 0 ? 'Đã trả trước' : 'Chờ trả trước',
-      icon: orderStep.current === 0 && orderStep.status === 'error' ? null : <ShoppingCartOutlined />
+      title: 'Nhân giống',
+      icon: <ShoppingCartOutlined />
     },
     {
-      title: orderStep.current === 1 ? 'Đang lai chim' : orderStep.current > 1 ? 'Đã lai xong' : 'Chờ lai chim',
-      icon: orderStep.current === 1 && orderStep.status === 'error' ? null : <CheckCircleOutlined />
+      title: 'Ấp trứng',
+      icon: <ShoppingCartOutlined />
     },
     {
-      title: orderStep.current === 2 ? 'Đang nhận con' : orderStep.current > 2 ? 'Đã nhận con' : 'Chờ nhận con',
-      icon: orderStep.current === 2 && orderStep.status === 'error' ? null : <InboxOutlined />
+      title: 'Trứng nở hết',
+      icon: <ShoppingCartOutlined />
+    }
+  ]
+  const orderDes: DescriptionsProps['items'] = [
+    {
+      key: '1',
+      labelStyle: {
+        textAlign: 'right'
+      },
+      contentStyle: {
+        textAlign: 'right'
+      },
+      label: 'Tổng tiền hàng',
+      children: formatCurrencyVND(booking?.bookingDetail.fatherBird.price + booking?.bookingDetail.motherBird.price)
     },
     {
-      title: orderStep.current === 3 ? 'Đang vận chuyển' : orderStep.current > 3 ? 'Đã vận chuyển' : 'Chờ vận chuyển',
-      icon: orderStep.current === 3 && orderStep.status === 'error' ? null : <CarOutlined />
+      key: '2',
+      label: 'Phí vận chuyển',
+      labelStyle: {
+        textAlign: 'right'
+      },
+      contentStyle: {
+        textAlign: 'right'
+      },
+      children: formatCurrencyVND(booking?.shippingMoney)
     },
     {
-      title: orderStep.current === 4 ? 'Đang giao hàng' : orderStep.current > 4 ? 'Đã giao hàng' : 'Chờ giao hàng',
-      icon: orderStep.current === 4 && orderStep.status === 'error' ? null : <CarryOutOutlined />
+      key: '3',
+      label: 'Thành tiền',
+      labelStyle: {
+        textAlign: 'right'
+      },
+      contentStyle: {
+        textAlign: 'right'
+      },
+      children: formatCurrencyVND(booking?.totalPayment)
+    },
+    {
+      key: '4',
+      label: 'Tiền đặt cọc',
+      labelStyle: {
+        textAlign: 'right'
+      },
+      contentStyle: {
+        textAlign: 'right'
+      },
+      children: formatCurrencyVND(booking?.paymentDeposit)
+    },
+    {
+      key: '5',
+      label: 'Tiền phải trả',
+      labelStyle: {
+        textAlign: 'right'
+      },
+      contentStyle: {
+        textAlign: 'right'
+      },
+      children: formatCurrencyVND(booking?.totalPayment - booking?.paymentDeposit)
+    },
+    {
+      key: '6',
+      label: 'Phương thức thanh toán nhận con',
+      labelStyle: {
+        textAlign: 'right'
+      },
+      contentStyle: {
+        textAlign: 'right'
+      },
+      children: booking?.paymentMethod === 'Debit_Or_Credit_Card' ? 'VNPay' : 'Tiền mặt'
     }
   ]
 
-  const checkPaymentStatus = async (bookingId: number): Promise<BookingStatus> => {
+  const checkPaymentStatus = async (bookingId: number): Promise<any> => {
     const response = await axiosClient.get(`/booking/${bookingId}`)
-    return response.data.status
+    return response.data
   }
   const longPollingCheckPaymentStatus = async (bookingId: number) => {
     const intervalId = setInterval(async () => {
       try {
-        const isPaymentSuccessful = await checkPaymentStatus(bookingId)
+        const data = await checkPaymentStatus(bookingId)
+        const isPaymentSuccessful = data.status as any
 
-        if (isPaymentSuccessful === BookingStatus.Confirmed) {
+        if (isPaymentSuccessful === BookingStatus.Confirmed || data?.bookingDetail.status === 'Receiving_Confirm') {
           clearInterval(intervalId) // Dừng long polling khi thanh toán thành công
           dispatch(reFetchData())
           setBtnPaymentLoading(false)
@@ -228,6 +362,39 @@ const BookingDetailPage: React.FC = () => {
       notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
     }
   }
+
+  const handleTakeBird = async () => {
+    setBtnTakeBirdLoading(true)
+    try {
+      const response = await axiosClient.put(`/bookingdetail/${id}/status?status=Receiving_Confirm`)
+      if (response) {
+        dispatch(reFetchData())
+        setBtnTakeBirdLoading(false)
+      } else {
+        notification.error({ message: 'Sorry! Something went wrong. App server error' })
+      }
+    } catch (err) {
+      setBtnTakeBirdLoading(false)
+      notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+    }
+  }
+
+  const handleNotTakeBird = async () => {
+    setBtnNotTakeBirdLoading(true)
+    try {
+      const response = await axiosClient.put(`/bookingdetail/${id}/status?status=Not_Receiving_Confirm`)
+      if (response) {
+        dispatch(reFetchData())
+        setBtnNotTakeBirdLoading(false)
+      } else {
+        notification.error({ message: 'Sorry! Something went wrong. App server error' })
+      }
+    } catch (err) {
+      setBtnNotTakeBirdLoading(false)
+      notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+    }
+  }
+
   const handleConfirm = () => {
     setBtnPaymentLoading(true)
     axiosClient
@@ -246,57 +413,76 @@ const BookingDetailPage: React.FC = () => {
       })
   }
 
-  const handlePay = () => {
+  const handlePay = async () => {
     setBtnPaymentLoading(true)
-    axiosClient
-      .get(`/booking/pay-total-booking?id=${id}`)
-      .then((response) => {
-        setBtnPaymentLoading(false)
-        if (response) {
-          notification.success({ message: 'Vui lòng thanh toán trả trước' })
-
-          if (response.data.url) {
-            window.open(response.data.url, '_blank')!.focus()
-          }
-          dispatch(reFetchData())
-        } else {
-          notification.error({ message: 'Thanh toán thất bại' })
+    try {
+      const response = await axiosClient.get(`/booking/pay-total-booking?id=${id}`)
+      if (response) {
+        // redirect tới trang thanh toán
+        if (response.data) {
+          window.open(response.data.url, '_blank')!.focus()
         }
-      })
-      .catch((err) => {
-        setBtnPaymentLoading(false)
-        notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
-      })
+        // gọi api check status
+        await longPollingCheckPaymentStatus(booking.id)
+      } else {
+        notification.error({ message: 'Sorry! Something went wrong. App server error' })
+      }
+    } catch (err) {
+      setBtnPaymentLoading(false)
+      notification.error({ message: (err as string) || 'Sorry! Something went wrong. App server error' })
+    }
   }
 
   useEffect(() => {
     if (!loading && !error && response) {
       const status = response.data.status as BookingStatus
-
+      const status2nd = response.data.bookingDetail.status
       if (status == BookingStatus.Pending) {
-        setOrderStep({
+        setBookingStep({
           status: 'process',
           current: 0
         })
       } else if (status == BookingStatus.Confirmed) {
-        setOrderStep({
+        setBookingStep({
           status: 'process',
           current: 1
         })
       } else if (status == BookingStatus.Preparing) {
-        setOrderStep({
+        setBookingStep({
           status: 'process',
           current: 2
         })
       } else if (status == BookingStatus.Shipping) {
-        setOrderStep({
+        setBookingStep({
           status: 'process',
           current: 3
         })
       } else if (status == BookingStatus.Delivered) {
-        setOrderStep({
+        setBookingStep({
           status: 'process',
           current: 4
+        })
+      } else if (status == BookingStatus.Cancelled) {
+        setBookingStep({
+          status: 'error',
+          current: 1
+        })
+      }
+
+      if (status2nd === 'In_Breeding_Progress') {
+        setBookingDetailStep({
+          status: 'process',
+          current: 0
+        })
+      } else if (status2nd === 'Brooding') {
+        setBookingDetailStep({
+          status: 'process',
+          current: 1
+        })
+      } else if (status2nd === 'Fledgling_All') {
+        setBookingDetailStep({
+          status: 'process',
+          current: 2
         })
       }
     }
@@ -306,7 +492,7 @@ const BookingDetailPage: React.FC = () => {
     const intervalId = setInterval(async () => {
       try {
         if (booking) {
-          if (booking.status === BookingStatus.Pending) {
+          if (booking.status === BookingStatus.Pending && booking.paymentMethod === 'Debit_Or_Credit_Card') {
             const isPaymentSuccessful = await checkPaymentStatus(booking.id)
 
             if (isPaymentSuccessful === BookingStatus.Confirmed) {
@@ -349,8 +535,8 @@ const BookingDetailPage: React.FC = () => {
             <Steps
               className='custom-step-content'
               // onChange={onStepChange}
-              current={orderStep.current}
-              status={orderStep.status}
+              current={bookingStep.current}
+              status={bookingStep.status}
               labelPlacement='vertical'
               items={stepItems}
             />
@@ -369,13 +555,46 @@ const BookingDetailPage: React.FC = () => {
                   </Button>
                 </Flex>
               )}
-              {booking?.status === BookingStatus.Preparing && (
-                <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
-                  <Button className='w-48' size='large' type='primary' loading={btnPaymentLoading} onClick={handlePay}>
-                    Thanh toán nhận chim
-                  </Button>
-                </Flex>
-              )}
+              {booking?.status === BookingStatus.Preparing &&
+                booking.bookingDetail.status !== 'Receiving_Confirm' &&
+                booking.bookingDetail.status !== 'Not_Receiving_Confirm' && (
+                  <>
+                    <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
+                      {booking?.paymentMethod === 'Debit_Or_Credit_Card' ? (
+                        <Button
+                          className='w-48'
+                          size='large'
+                          type='primary'
+                          loading={btnPaymentLoading}
+                          onClick={handlePay}
+                        >
+                          Thanh toán nhận chim
+                        </Button>
+                      ) : (
+                        <Button
+                          className='w-48'
+                          size='large'
+                          type='primary'
+                          loading={btnTakeBirdLoading}
+                          onClick={handleTakeBird}
+                        >
+                          Nhận chim
+                        </Button>
+                      )}
+                    </Flex>
+                    <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
+                      <Button
+                        className='w-48'
+                        size='large'
+                        type='primary'
+                        loading={btnNotTakeBirdLoading}
+                        onClick={handleNotTakeBird}
+                      >
+                        Không nhận chim
+                      </Button>
+                    </Flex>
+                  </>
+                )}
               {booking?.status === BookingStatus.Shipping && (
                 <Flex justify='flex-end' className='border-[1px] border-dashed p-5'>
                   <Button
@@ -482,9 +701,17 @@ const BookingDetailPage: React.FC = () => {
               </List.Item>
             </List>
 
-            {booking?.status === BookingStatus.Preparing && (
+            {booking?.status !== BookingStatus.Pending && booking?.bookingDetail.status !== 'Waiting' && (
               <>
                 <Divider />
+                <Steps
+                  className='custom-step-content'
+                  // onChange={onStepChange}
+                  current={bookingDetailStep.current}
+                  status={bookingDetailStep.status}
+                  labelPlacement='vertical'
+                  items={bookingDetailStepItems}
+                />
                 <Typography.Title level={3}>Chim con</Typography.Title>
                 <List
                   itemLayout='horizontal'
@@ -533,6 +760,8 @@ const BookingDetailPage: React.FC = () => {
                 />
               </>
             )}
+            <Divider />
+            <Descriptions items={orderDes} column={1} bordered />
           </Space>
         )}
       </Skeleton>

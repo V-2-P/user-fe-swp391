@@ -57,7 +57,7 @@ const Pairing: React.FC = () => {
   const birdMemorized: Bird[] = useMemo(() => {
     if (!birdLoading && !birdError && birdResponse) {
       return birdResponse.data.filter(
-        (bird: any) => bird.birdType.id.toString() === birdTypeId && bird.category.id === 2
+        (bird: any) => bird.birdType.id.toString() === birdTypeId && bird.category.id === 2 && bird.quantity > 0
       )
     }
     return []

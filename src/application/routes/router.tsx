@@ -20,7 +20,8 @@ import {
   ChangePassword,
   OrderDetail,
   Booking,
-  BookingDetail
+  BookingDetail,
+  PaymentResult
 } from '~/application/pages'
 import Loading from '../components/shared/Loading'
 import ErrorBoundary from './errorBoundary'
@@ -77,6 +78,7 @@ const Router: React.FC = () => {
               <Route path='/' element={<Landing />} />
               <Route path='/compare' element={<ComparePage />} />
               <Route path='/pairing' element={<Pairing />} />
+              <Route path='/payment' element={<PaymentResult />} />
             </Route>
 
             <Route path='*' element={<NotFound />} />

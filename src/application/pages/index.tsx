@@ -22,3 +22,4 @@ export const ChangePassword = React.lazy(() => import('./ForgotPassword/changePa
 export const OrderDetail = React.lazy(() => import('./Order/orderDetail'))
 export const Booking = React.lazy(() => import('./Booking'))
 export const BookingDetail = React.lazy(() => import('./Booking/bookingDetail'))
+export const PaymentResult = React.lazy(() => import('./PaymentResult'))

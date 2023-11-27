@@ -25,7 +25,12 @@ const Search: React.FC = () => {
     () =>
       !loadingCategory && !errorCategory && responseCategory
         ? responseCategory.data
-            .filter((d: { id: number; name: string }) => d.name !== 'Chim ghép sinh sản')
+            .filter((d: { id: number; name: string }) => {
+              console.log(d)
+              if (d.name === 'Chim ghép sinh sản') return false
+              if (d.name === 'Chim non') return false
+              return true
+            })
             .map((d: { id: number; name: string }) => ({
               value: d.id,
               label: d.name

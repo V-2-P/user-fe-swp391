@@ -1,4 +1,4 @@
-export const getStatusVN = (status: string) => {
+export const getStatusVN = (status: string, status2nd?: string) => {
   switch (status) {
     case 'pending':
       return 'Chờ xác nhận'
@@ -31,6 +31,14 @@ export const getStatusVN = (status: string) => {
       return 'Có thể nhận con'
       break
     case 'Confirmed':
+      if (status2nd === 'Waiting') {
+        return 'Chờ xác nhận'
+        break
+      }
+      if (status2nd === 'Waiting') {
+        return 'In_Breeding_Progress'
+        break
+      }
       return 'Đang lai'
       break
     default:
