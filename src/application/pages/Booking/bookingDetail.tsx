@@ -366,7 +366,7 @@ const BookingDetailPage: React.FC = () => {
   const handleTakeBird = async () => {
     setBtnTakeBirdLoading(true)
     try {
-      const response = await axiosClient.put(`/bookingdetail/${id}/status?status=Receiving_Confirm`)
+      const response = await axiosClient.put(`/bookingdetail/${booking.bookingDetail.id}/status?status=Receiving_Confirm`)
       if (response) {
         dispatch(reFetchData())
         setBtnTakeBirdLoading(false)
